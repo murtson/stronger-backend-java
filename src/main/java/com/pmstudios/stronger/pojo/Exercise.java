@@ -1,40 +1,26 @@
 package com.pmstudios.stronger.pojo;
 
 
+import lombok.*;
+
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
+@Getter
+@Setter
+@Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@RequiredArgsConstructor
+@Table(name = "exercise")
 public class Exercise {
 
-    private int id;
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "name", nullable = false)
     private String name;
 
-    public Exercise(int id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public Exercise(Exercise exercise) {
-        this.id = exercise.id;
-        this.name = exercise.name;
-    }
-
-    public Exercise() {
-
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }

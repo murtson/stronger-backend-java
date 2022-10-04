@@ -13,7 +13,34 @@ import java.util.List;
 @Service
 public class ExerciseServiceImpl implements ExerciseService {
 
+
     @Autowired
+    ExerciseRepository exerciseRepository;
+
+    @Override
+    public Exercise getExercise(Long id) {
+        return exerciseRepository.findById(id).get();
+    }
+
+    @Override
+    public Exercise saveExercise(Exercise exercise) {
+        return exerciseRepository.save(exercise);
+    }
+
+    @Override
+    public void deleteExercise(Long id) {
+        exerciseRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Exercise> getExercises() {
+        return (List<Exercise>)exerciseRepository.findAll();
+    }
+
+
+
+
+/*    @Autowired
     private ExerciseRepository exerciseRepository;
 
     @Override
@@ -39,7 +66,7 @@ public class ExerciseServiceImpl implements ExerciseService {
     @Override
     public void saveExercise(Exercise exercise) {
         exerciseRepository.saveExercise(exercise);
-    }
+    }*/
 
 
 

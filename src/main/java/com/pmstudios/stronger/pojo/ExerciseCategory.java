@@ -1,9 +1,18 @@
 package com.pmstudios.stronger.pojo;
 
 
+import lombok.*;
+
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@Table(name = "exercise_category")
 public class ExerciseCategory {
     public enum MuscleCategory {
         CHEST,
@@ -15,32 +24,13 @@ public class ExerciseCategory {
         ABS
     }
 
-    private int id;
-    private final MuscleCategory category;
-    private final List<Exercise> exercises;
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    public ExerciseCategory(int id, MuscleCategory category, List<Exercise> exercises) {
-        this.id = id;
-        this.category = category;
-        this.exercises = exercises;
-    }
 
-    public ExerciseCategory(int id, MuscleCategory category) {
-        this.id = id;
-        this.category = category;
-        this.exercises = new ArrayList<>();
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void addExercise(Exercise exercise) {
-        exercises.add(new Exercise(exercise));
-    }
+    @Column(name = "name")
+    private MuscleCategory name;
 
 }
