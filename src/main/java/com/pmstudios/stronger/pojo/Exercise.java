@@ -11,7 +11,6 @@ import javax.validation.constraints.NotBlank;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@RequiredArgsConstructor
 @Table(name = "exercise")
 public class Exercise {
 
@@ -22,5 +21,9 @@ public class Exercise {
 
     @Column(name = "name", nullable = false)
     private String name;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "exercise_category_id", referencedColumnName = "id")
+    private ExerciseCategory exerciseCategory;
 
 }

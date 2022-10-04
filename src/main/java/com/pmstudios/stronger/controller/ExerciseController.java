@@ -28,10 +28,16 @@ public class ExerciseController {
         return new ResponseEntity<>(exercise, HttpStatus.OK);
     }
 
-    @PostMapping()
-    public ResponseEntity<Exercise> saveExercise(@RequestBody Exercise exercise) {
-        Exercise savedExercise = exerciseService.saveExercise(exercise);
+    @PostMapping(value = "/exercise-category/{categoryId}")
+    public ResponseEntity<Exercise> saveExercise(@PathVariable Long categoryId, @RequestBody Exercise exercise) {
+        Exercise savedExercise = exerciseService.saveExercise(exercise, categoryId);
         return new ResponseEntity<>(savedExercise, HttpStatus.CREATED);
+    }
+
+    @GetMapping(value = "/exercise-category/{categoryId}")
+    public ResponseEntity<List<Exercise>> getExerciseCategoryExercises(@PathVariable Long categoryId) {
+        List<Exercise> exercises = exerciseService.getExerciseCategoryExercises(categoryId);
+        return new ResponseEntity<>(exercises, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

@@ -3,6 +3,8 @@ package com.pmstudios.stronger.service;
 import com.pmstudios.stronger.Constants;
 import com.pmstudios.stronger.exception.ExerciseNotFoundException;
 import com.pmstudios.stronger.pojo.Exercise;
+import com.pmstudios.stronger.pojo.ExerciseCategory;
+import com.pmstudios.stronger.respository.ExerciseCategoryRepository;
 import com.pmstudios.stronger.respository.ExerciseRepository;
 import org.apache.tomcat.util.bcel.Const;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +19,18 @@ public class ExerciseServiceImpl implements ExerciseService {
     @Autowired
     ExerciseRepository exerciseRepository;
 
+    @Autowired
+    ExerciseCategoryRepository exerciseCategoryRepository;
+
     @Override
     public Exercise getExercise(Long id) {
         return exerciseRepository.findById(id).get();
     }
 
     @Override
-    public Exercise saveExercise(Exercise exercise) {
+    public Exercise saveExercise(Exercise exercise, Long exerciseCategoryId) {
+        ExerciseCategory exerciseCategory = exerciseCategoryRepository.findById(exerciseCategoryId).get();
+        exercise.setExerciseCategory(exerciseCategory);
         return exerciseRepository.save(exercise);
     }
 
@@ -36,6 +43,13 @@ public class ExerciseServiceImpl implements ExerciseService {
     public List<Exercise> getExercises() {
         return (List<Exercise>)exerciseRepository.findAll();
     }
+
+    @Override
+    public List<Exercise> getExerciseCategoryExercises(Long exerciseCategoryId) {
+        return exerciseRepository.findByExerciseCategoryId(exerciseCategoryId);
+    }
+
+
 
 
 
