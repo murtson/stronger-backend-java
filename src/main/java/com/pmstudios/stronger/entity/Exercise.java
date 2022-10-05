@@ -4,6 +4,7 @@ package com.pmstudios.stronger.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @Setter
@@ -24,5 +25,9 @@ public class Exercise {
     @ManyToOne(optional = false)
     @JoinColumn(name = "exercise_category_id", referencedColumnName = "id")
     private ExerciseCategory exerciseCategory;
+
+    // probably not have CascadeType.ALL
+    @OneToMany(mappedBy = "exericse", cascade = CascadeType.ALL)
+    private List<LoggedExercise> loggedExercises;
 
 }

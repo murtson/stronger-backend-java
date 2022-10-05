@@ -11,7 +11,7 @@ public interface UserWorkoutService {
 
     List<UserWorkout> getUserWorkouts();
 
-    UserWorkout saveUserWorkout(UserWorkout userWorkout);
+    UserWorkout saveUserWorkout(UserWorkout userWorkout, Long userId);
 
     void deleteUserWorkout(Long id);
 

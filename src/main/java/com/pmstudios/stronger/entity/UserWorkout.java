@@ -1,10 +1,7 @@
 package com.pmstudios.stronger.entity;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -13,7 +10,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "user-workout")
+@Table(name = "user_workout")
 public class UserWorkout {
 
     @Id
@@ -21,8 +18,13 @@ public class UserWorkout {
     @Column(name = "id")
     private Long id;
 
-    //@ManyToOne(optional = false)
-    //@JoinColumn(name = "user_id", referencedColumnName = "id")
-    //private User user;
+    @Column(name = "name")
+    private String name;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+
+
 
 }
