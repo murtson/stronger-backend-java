@@ -1,8 +1,7 @@
 package com.pmstudios.stronger;
 
-import com.pmstudios.stronger.pojo.Exercise;
+import com.pmstudios.stronger.entity.Exercise;
 import com.pmstudios.stronger.respository.ExerciseRepository;
-import com.pmstudios.stronger.service.ExerciseService;
 import com.pmstudios.stronger.service.ExerciseServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,12 +9,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 

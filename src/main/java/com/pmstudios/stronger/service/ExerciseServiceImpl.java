@@ -1,25 +1,21 @@
 package com.pmstudios.stronger.service;
 
-import com.pmstudios.stronger.Constants;
-import com.pmstudios.stronger.exception.ExerciseNotFoundException;
-import com.pmstudios.stronger.pojo.Exercise;
-import com.pmstudios.stronger.pojo.ExerciseCategory;
+import com.pmstudios.stronger.entity.Exercise;
+import com.pmstudios.stronger.entity.ExerciseCategory;
 import com.pmstudios.stronger.respository.ExerciseCategoryRepository;
 import com.pmstudios.stronger.respository.ExerciseRepository;
-import org.apache.tomcat.util.bcel.Const;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class ExerciseServiceImpl implements ExerciseService {
 
-
-    @Autowired
     ExerciseRepository exerciseRepository;
 
-    @Autowired
     ExerciseCategoryRepository exerciseCategoryRepository;
 
     @Override

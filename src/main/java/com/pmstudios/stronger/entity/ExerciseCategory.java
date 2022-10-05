@@ -1,11 +1,10 @@
-package com.pmstudios.stronger.pojo;
+package com.pmstudios.stronger.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -34,8 +33,10 @@ public class ExerciseCategory {
     @Column(name = "name")
     private MuscleCategory name;
 
+    // JsonIgnore to not get an infinite loop
+    // Cascade to remove all exercises when we remove a category
     @JsonIgnore
-    @OneToMany(mappedBy = "exerciseCategory")
+    @OneToMany(mappedBy = "exerciseCategory", cascade = CascadeType.ALL)
     private List<Exercise> exercises;
 
 }

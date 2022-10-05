@@ -1,11 +1,8 @@
 package com.pmstudios.stronger.respository;
 
-import com.pmstudios.stronger.pojo.Exercise;
-import com.pmstudios.stronger.pojo.ExerciseCategory;
+import com.pmstudios.stronger.entity.Exercise;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 

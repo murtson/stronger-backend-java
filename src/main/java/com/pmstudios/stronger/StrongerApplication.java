@@ -1,14 +1,13 @@
 package com.pmstudios.stronger;
 
-import com.pmstudios.stronger.pojo.Exercise;
-import com.pmstudios.stronger.pojo.ExerciseCategory;
+import com.pmstudios.stronger.entity.ExerciseCategory;
+import com.pmstudios.stronger.entity.User;
 import com.pmstudios.stronger.respository.ExerciseCategoryRepository;
 import com.pmstudios.stronger.respository.ExerciseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 

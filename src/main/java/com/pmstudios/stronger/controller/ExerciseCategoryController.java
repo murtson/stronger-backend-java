@@ -1,27 +1,24 @@
 package com.pmstudios.stronger.controller;
 
-import com.pmstudios.stronger.pojo.Exercise;
-import com.pmstudios.stronger.pojo.ExerciseCategory;
+import com.pmstudios.stronger.entity.ExerciseCategory;
 import com.pmstudios.stronger.service.ExerciseCategoryService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping("/exercise-category")
 public class ExerciseCategoryController {
-
-    @Autowired
     ExerciseCategoryService exerciseCategoryService;
 
     @GetMapping("/all")
     ResponseEntity<List<ExerciseCategory>> getExerciseCategories() {
         List<ExerciseCategory> categories = exerciseCategoryService.getExerciseCategories();
         return new ResponseEntity<>(categories, HttpStatus.OK);
-
     }
 
     @GetMapping("/{id}")

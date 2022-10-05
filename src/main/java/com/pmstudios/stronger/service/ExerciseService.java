@@ -1,7 +1,6 @@
 package com.pmstudios.stronger.service;
 
-import com.pmstudios.stronger.pojo.Exercise;
-import com.pmstudios.stronger.pojo.ExerciseCategory;
+import com.pmstudios.stronger.entity.Exercise;
 
 import java.util.List;
 

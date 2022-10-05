@@ -1,19 +1,19 @@
 package com.pmstudios.stronger.controller;
 
-import com.pmstudios.stronger.pojo.Exercise;
+import com.pmstudios.stronger.entity.Exercise;
 import com.pmstudios.stronger.service.ExerciseService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping("/exercise")
 public class ExerciseController {
 
-    @Autowired
     ExerciseService exerciseService;
 
     @GetMapping(value = "/all")
