@@ -1,6 +1,7 @@
 package com.pmstudios.stronger.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
@@ -28,8 +29,8 @@ public class User {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @JsonIgnore
+    @JsonIgnoreProperties(value = { "user" })
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<UserWorkout> userWorkouts;
+    private List<Workout> workouts;
 
 }

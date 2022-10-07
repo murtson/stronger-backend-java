@@ -1,11 +1,11 @@
 package com.pmstudios.stronger.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,18 +20,18 @@ public class LoggedExercise {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "weight")
-    private float weight;
+    @JsonIgnoreProperties(value = { "loggedExercise" })
+    @OneToMany(mappedBy = "loggedExercise")
+    private List<LoggedSet> loggedSets;
 
-    @Column(name = "reps")
-    private int reps;
+    @JsonIgnoreProperties(value = { "loggedExercises" })
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "workout_id", referencedColumnName = "id")
+    private Workout workout;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "exercise_id", referencedColumnName = "id")
     private Exercise exercise;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "logged_workout_set_id", referencedColumnName = "id")
-    private LoggedWorkoutSet loggedWorkoutSet;
 
 }

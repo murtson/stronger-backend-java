@@ -2,6 +2,7 @@ package com.pmstudios.stronger.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
@@ -33,9 +34,7 @@ public class ExerciseCategory {
     @Column(name = "name")
     private MuscleCategory name;
 
-    // JsonIgnore to not get an infinite loop
-    // Cascade to remove all exercises when we remove a category
-    @JsonIgnore
+    @JsonIgnoreProperties(value = { "exerciseCategory" })
     @OneToMany(mappedBy = "exerciseCategory", cascade = CascadeType.ALL)
     private List<Exercise> exercises;
 

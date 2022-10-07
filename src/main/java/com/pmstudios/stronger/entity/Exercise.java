@@ -1,6 +1,7 @@
 package com.pmstudios.stronger.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -9,7 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@AllArgsConstructor
+@RequiredArgsConstructor
 @NoArgsConstructor
 @Table(name = "exercise")
 public class Exercise {
@@ -19,6 +20,7 @@ public class Exercise {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NonNull
     @Column(name = "name", nullable = false)
     private String name;
 
@@ -26,8 +28,8 @@ public class Exercise {
     @JoinColumn(name = "exercise_category_id", referencedColumnName = "id")
     private ExerciseCategory exerciseCategory;
 
-    // probably not have CascadeType.ALL
-    @OneToMany(mappedBy = "exericse", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL)
     private List<LoggedExercise> loggedExercises;
 
 }

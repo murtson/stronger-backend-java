@@ -1,5 +1,6 @@
 package com.pmstudios.stronger;
 
+import com.pmstudios.stronger.entity.Exercise;
 import com.pmstudios.stronger.entity.ExerciseCategory;
 import com.pmstudios.stronger.entity.User;
 import com.pmstudios.stronger.respository.ExerciseCategoryRepository;
