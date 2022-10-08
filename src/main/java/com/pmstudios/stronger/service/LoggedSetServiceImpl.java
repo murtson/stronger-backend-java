@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -17,47 +18,14 @@ public class LoggedSetServiceImpl implements LoggedSetService {
 
     LoggedSetRepository loggedSetRepository;
 
-    LoggedExerciseRepository loggedExerciseRepository;
-
-    ExerciseRepository exerciseRepository;
-
-
     @Override
-    public LoggedSet getLoggedSet(Long id) {
-        return null;
+    public LoggedSet saveLoggedSet(LoggedSet set, LoggedExercise loggedExercise) {
+        set.setLoggedExercise(loggedExercise);
+        return loggedSetRepository.save(set);
     }
 
     @Override
-    public LoggedSet saveLoggedSet(LoggedSet loggedSet, Long loggedExerciseId) {
-        LoggedExercise loggedExercise = loggedExerciseRepository.findById(loggedExerciseId).get();
-        loggedSet.setLoggedExercise(loggedExercise);
-        return loggedSetRepository.save(loggedSet);
-    }
-
-    @Override
-    public void deleteLoggedSet(Long id) {
-
-    }
-
-    @Override
-    public LoggedSet updateLoggedSet(LoggedSet loggedSet) {
-        return null;
-    }
-
-    @Override
-    public List<LoggedSet> saveLoggedSets(List<LoggedSet> loggedSets, Long loggedExerciseId) {
-        // TODO: rewrite with lambda?
-        List<LoggedSet> updatedLoggedSets = new ArrayList<>();
-        for (LoggedSet set : loggedSets) {
-            LoggedSet createdSet = this.saveLoggedSet(set, loggedExerciseId);
-            updatedLoggedSets.add(createdSet);
-        }
-        return updatedLoggedSets;
-    }
-
-
-    @Override
-    public List<LoggedSet> getLoggedExerciseLoggedSets(Long loggedExerciseId) {
-        return null;
+    public List<LoggedSet> updateLoggedSets(List<LoggedSet> loggedSets, LoggedExercise loggedExercise) {
+        return loggedSets.stream().map(set -> saveLoggedSet(set, loggedExercise)).collect(Collectors.toList());
     }
 }

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Entity
@@ -31,7 +32,7 @@ public class ExerciseCategory {
     private Long id;
 
     @NonNull
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private MuscleCategory name;
 
     @JsonIgnoreProperties(value = { "exerciseCategory" })

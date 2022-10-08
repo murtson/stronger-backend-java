@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @AllArgsConstructor
@@ -29,7 +30,7 @@ public class ExerciseController {
     }
 
     @PostMapping(value = "/exercise-category/{categoryId}")
-    public ResponseEntity<Exercise> saveExercise(@PathVariable Long categoryId, @RequestBody Exercise exercise) {
+    public ResponseEntity<Exercise> saveExercise(@PathVariable Long categoryId, @Valid @RequestBody Exercise exercise) {
         Exercise savedExercise = exerciseService.saveExercise(exercise, categoryId);
         return new ResponseEntity<>(savedExercise, HttpStatus.CREATED);
     }

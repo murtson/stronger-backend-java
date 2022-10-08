@@ -8,11 +8,9 @@ import java.util.List;
 public interface WorkoutService {
 
     Workout getWorkout(Long id);
-
-    List<Workout> getWorkouts();
-
     Workout saveWorkout(Workout workout, Long userId);
-
     void deleteWorkout(Long id);
+    List<Workout> getWorkouts();
+    List<Workout> getUserWorkouts(Long userId);
 
 }

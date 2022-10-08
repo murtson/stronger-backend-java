@@ -34,8 +34,8 @@ public class StrongerApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 
 		User[] users = new User[] {
-				new User("Olle", "Johan"),
-				new User("Kalle", "Svensson")
+				new User("William", "Andersson", "william.andersson@gmail.com"),
+				new User("Linus", "Krohn", "linus.krohn@gmail.com")
 		};
 
 		for (User user : users) {
@@ -44,12 +44,17 @@ public class StrongerApplication implements CommandLineRunner {
 
 		ExerciseCategory[] exerciseCategories = new ExerciseCategory[] {
 				new ExerciseCategory(ExerciseCategory.MuscleCategory.CHEST),
+				new ExerciseCategory(ExerciseCategory.MuscleCategory.SHOULDERS),
+				new ExerciseCategory(ExerciseCategory.MuscleCategory.TRICEPS),
 				new ExerciseCategory(ExerciseCategory.MuscleCategory.LEGS),
-				new ExerciseCategory(ExerciseCategory.MuscleCategory.BACK)
+				new ExerciseCategory(ExerciseCategory.MuscleCategory.BACK),
+				new ExerciseCategory(ExerciseCategory.MuscleCategory.BICEPS),
+				new ExerciseCategory(ExerciseCategory.MuscleCategory.ABS),
 		};
 
 		for (ExerciseCategory exerciseCategory : exerciseCategories) {
 			exerciseCategoryRepository.save(exerciseCategory);
 		}
+
 	}
 }

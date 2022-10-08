@@ -9,7 +9,7 @@ public interface LoggedExerciseService {
 
     LoggedExercise getLoggedExercise(Long id);
 
-    LoggedExercise saveLoggedExercise(LoggedExercise loggedExercise, Long WorkoutId, Long exerciseId);
+    LoggedExercise saveLoggedExercise(LoggedExercise loggedExercise, Long workoutId, Long exerciseId);
 
     LoggedExercise updateLoggedExerciseSets(Long loggedExerciseId, List<LoggedSet> updatedSets);
 

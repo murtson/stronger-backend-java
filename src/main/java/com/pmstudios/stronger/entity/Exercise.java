@@ -2,9 +2,11 @@ package com.pmstudios.stronger.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Getter
@@ -20,10 +22,13 @@ public class Exercise {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // unique: there cannot be exercises with the same name
+    @NotBlank(message = "exercise name must not be blank")
     @NonNull
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
+    @JsonIgnoreProperties(value = { "exercises" })
     @ManyToOne(optional = false)
     @JoinColumn(name = "exercise_category_id", referencedColumnName = "id")
     private ExerciseCategory exerciseCategory;

@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -16,16 +17,28 @@ public class WorkoutController {
 
     WorkoutService workoutService;
 
-    @PostMapping("/user/{userId}")
-    ResponseEntity<Workout> saveWorkout(@RequestBody Workout workout, @PathVariable Long userId) {
-        Workout savedWorkout = workoutService.saveWorkout(workout, userId);
-        return new ResponseEntity<>(savedWorkout, HttpStatus.CREATED);
-    }
-
     @GetMapping("/{id}")
     ResponseEntity<Workout> getWorkout(@PathVariable Long id) {
         Workout workout = workoutService.getWorkout(id);
         return new ResponseEntity<>(workout, HttpStatus.OK);
+    }
+
+    @PostMapping("/user/{userId}")
+    ResponseEntity<Workout> saveWorkout(@Valid @RequestBody Workout workout, @PathVariable Long userId) {
+        Workout savedWorkout = workoutService.saveWorkout(workout, userId);
+        return new ResponseEntity<>(savedWorkout, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/{id}")
+    ResponseEntity<HttpStatus> deleteWorkout(@PathVariable Long id) {
+        workoutService.deleteWorkout(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/user/{userId}")
+    ResponseEntity<List<Workout>> getUserWorkouts(@PathVariable Long userId) {
+        List<Workout> userWorkouts = workoutService.getUserWorkouts(userId);
+        return new ResponseEntity<>(userWorkouts, HttpStatus.OK);
     }
 
     @GetMapping("/all")
@@ -34,10 +47,6 @@ public class WorkoutController {
         return new ResponseEntity<>(workouts, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    ResponseEntity<HttpStatus> deleteWorkout(@PathVariable Long id) {
-        workoutService.deleteWorkout(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
+
 
 }

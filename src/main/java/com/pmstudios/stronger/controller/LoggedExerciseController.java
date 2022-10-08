@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -18,7 +19,7 @@ public class LoggedExerciseController {
     LoggedExerciseService loggedExerciseService;
 
     @PostMapping("/workout/{workoutId}/exercise/{exerciseId}")
-    ResponseEntity<LoggedExercise> createLoggedExercise(@RequestBody LoggedExercise loggedExercise, @PathVariable Long workoutId, @PathVariable Long exerciseId) {
+    ResponseEntity<LoggedExercise> createLoggedExercise(@Valid @RequestBody LoggedExercise loggedExercise, @PathVariable Long workoutId, @PathVariable Long exerciseId) {
         LoggedExercise createdLoggedExercise = loggedExerciseService.saveLoggedExercise(loggedExercise, workoutId, exerciseId);
         return new ResponseEntity<>(createdLoggedExercise, HttpStatus.CREATED);
     }
@@ -36,7 +37,7 @@ public class LoggedExerciseController {
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<LoggedExercise> updatedLoggedExerciseSets(@PathVariable Long id, @RequestBody List<LoggedSet> updatedSets) {
+    ResponseEntity<LoggedExercise> updatedLoggedExerciseSets( @PathVariable Long id, @Valid @RequestBody List<LoggedSet> updatedSets) {
         LoggedExercise updatedLoggedExercise = loggedExerciseService.updateLoggedExerciseSets(id, updatedSets);
         return new ResponseEntity<>(updatedLoggedExercise, HttpStatus.OK);
     }

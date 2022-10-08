@@ -1,21 +1,16 @@
 package com.pmstudios.stronger.service;
 
+import com.pmstudios.stronger.entity.LoggedExercise;
 import com.pmstudios.stronger.entity.LoggedSet;
 
 import java.util.List;
 
 public interface LoggedSetService {
 
-    LoggedSet getLoggedSet(Long id);
 
-    LoggedSet saveLoggedSet(LoggedSet loggedSet, Long loggedExerciseId);
+    LoggedSet saveLoggedSet(LoggedSet loggedSet, LoggedExercise loggedExercise);
 
-    void deleteLoggedSet(Long id);
+    List<LoggedSet> updateLoggedSets(List<LoggedSet> loggedSets, LoggedExercise loggedExercise);
 
-    LoggedSet updateLoggedSet(LoggedSet loggedSet);
-
-    List<LoggedSet> saveLoggedSets(List<LoggedSet> loggedSets, Long loggedExerciseId);
-
-    List<LoggedSet> getLoggedExerciseLoggedSets(Long loggedExerciseId);
 
 }

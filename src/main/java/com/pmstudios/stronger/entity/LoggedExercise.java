@@ -21,7 +21,7 @@ public class LoggedExercise {
     private Long id;
 
     @JsonIgnoreProperties(value = { "loggedExercise" })
-    @OneToMany(mappedBy = "loggedExercise")
+    @OneToMany(mappedBy = "loggedExercise", cascade = CascadeType.ALL)
     private List<LoggedSet> loggedSets;
 
     @JsonIgnoreProperties(value = { "loggedExercises" })

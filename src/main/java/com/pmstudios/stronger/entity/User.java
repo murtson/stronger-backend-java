@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -21,13 +22,20 @@ public class User {
     @Column(name = "id")
     private Long id;
 
+    @NotBlank(message = "first name must not be blank")
     @NonNull
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
+    @NotBlank(message = "first name must not be blank")
     @NonNull
     @Column(name = "last_name", nullable = false)
     private String lastName;
+
+    @NotBlank(message = "email must not be blank")
+    @NonNull
+    @Column(name = "email", nullable = false)
+    private String email;
 
     @JsonIgnoreProperties(value = { "user" })
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
