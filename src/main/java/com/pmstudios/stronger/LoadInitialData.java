@@ -1,13 +1,13 @@
 package com.pmstudios.stronger;
 
-import com.pmstudios.stronger.entity.Exercise;
-import com.pmstudios.stronger.entity.ExerciseCategory;
-import com.pmstudios.stronger.entity.User;
+import com.pmstudios.stronger.exercise.Exercise;
+import com.pmstudios.stronger.exerciseCategory.ExerciseCategory;
+import com.pmstudios.stronger.exerciseCategory.MuscleCategory;
+import com.pmstudios.stronger.user.User;
 import com.pmstudios.stronger.exception.EntityNotFoundException;
-import com.pmstudios.stronger.respository.ExerciseCategoryRepository;
-import com.pmstudios.stronger.respository.ExerciseRepository;
-import com.pmstudios.stronger.respository.UserRepository;
-import lombok.AllArgsConstructor;
+import com.pmstudios.stronger.exerciseCategory.ExerciseCategoryRepository;
+import com.pmstudios.stronger.exercise.ExerciseRepository;
+import com.pmstudios.stronger.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -28,13 +28,13 @@ public class LoadInitialData implements ApplicationRunner {
     User[] testUsers = { testUser1, testUser2 };
 
     ExerciseCategory[] exerciseCategories = new ExerciseCategory[] {
-            new ExerciseCategory(ExerciseCategory.MuscleCategory.CHEST),
-            new ExerciseCategory(ExerciseCategory.MuscleCategory.SHOULDERS),
-            new ExerciseCategory(ExerciseCategory.MuscleCategory.TRICEPS),
-            new ExerciseCategory(ExerciseCategory.MuscleCategory.LEGS),
-            new ExerciseCategory(ExerciseCategory.MuscleCategory.BACK),
-            new ExerciseCategory(ExerciseCategory.MuscleCategory.BICEPS),
-            new ExerciseCategory(ExerciseCategory.MuscleCategory.ABS),
+            new ExerciseCategory(MuscleCategory.CHEST),
+            new ExerciseCategory(MuscleCategory.SHOULDERS),
+            new ExerciseCategory(MuscleCategory.TRICEPS),
+            new ExerciseCategory(MuscleCategory.LEGS),
+            new ExerciseCategory(MuscleCategory.BACK),
+            new ExerciseCategory(MuscleCategory.BICEPS),
+            new ExerciseCategory(MuscleCategory.ABS),
     };
 
     Exercise[] chestExercises = new Exercise[] {

@@ -31,13 +31,16 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity<Object> handleDataAccessException(EmptyResultDataAccessException ex) {
-        ErrorResponse errorResponse = new ErrorResponse(Collections.singletonList("Cannot delete non-existing resource"));
+        ErrorResponse errorResponse = new ErrorResponse(
+                Collections.singletonList("Cannot delete non-existing resource"));
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
-        ErrorResponse errorResponse = new ErrorResponse(Collections.singletonList("Data Integrity Violation: we cannot process your request"));
+        String errorMessage = ex.getMessage() == null ?
+                "Data Integrity Violation: we cannot process your request" : ex.getMessage();
+        ErrorResponse errorResponse = new ErrorResponse(Collections.singletonList(errorMessage));
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 

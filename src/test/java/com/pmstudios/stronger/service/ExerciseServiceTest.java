@@ -1,13 +1,13 @@
 package com.pmstudios.stronger.service;
 
-import com.pmstudios.stronger.entity.Exercise;
-import com.pmstudios.stronger.entity.ExerciseCategory;
-import com.pmstudios.stronger.entity.LoggedExercise;
-import com.pmstudios.stronger.respository.ExerciseRepository;
-import com.pmstudios.stronger.service.implementation.ExerciseServiceImpl;
+import com.pmstudios.stronger.exercise.Exercise;
+import com.pmstudios.stronger.exerciseCategory.ExerciseCategory;
+import com.pmstudios.stronger.exerciseCategory.MuscleCategory;
+import com.pmstudios.stronger.loggedExercise.LoggedExercise;
+import com.pmstudios.stronger.exercise.ExerciseRepository;
+import com.pmstudios.stronger.exercise.ExerciseService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -28,7 +28,7 @@ public class ExerciseServiceTest {
 
 
 
-    ExerciseCategory exerciseCategoryChest = new ExerciseCategory(ExerciseCategory.MuscleCategory.CHEST);
+    ExerciseCategory exerciseCategoryChest = new ExerciseCategory(MuscleCategory.CHEST);
     List<LoggedExercise> loggedExercises;
 
     Exercise mockExercise1 = new Exercise("Flat Barbell Bench Press");

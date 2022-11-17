@@ -10,7 +10,10 @@ import java.util.List;
 @Getter
 @Setter
 public class ErrorResponse {
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyy hh:mm:ss")
+
+    // without JsonFormat, we would get "2022-11-17T12:53:05.2617804"
+    // now we get 2022-11-17 12:53:05 instead
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-mm-dd hh:mm:ss")
     private LocalDateTime timestamp;
     private List<String> messages;
 
