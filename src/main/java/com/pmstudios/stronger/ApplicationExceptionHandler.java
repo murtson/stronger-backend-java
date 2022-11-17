@@ -23,7 +23,7 @@ import java.util.List;
 @ControllerAdvice
 public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler({ExerciseNotFoundException.class, ExerciseCategoryNotFoundException.class, LoggedExerciseNotFoundException.class, UserNotFoundException.class, WorkoutNotFoundException.class, LoggedSetNotFoundException.class})
+    @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<Object> handleResourceNotFoundException(RuntimeException ex) {
         ErrorResponse errorResponse = new ErrorResponse(Collections.singletonList(ex.getMessage()));
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);

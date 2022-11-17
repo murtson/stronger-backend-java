@@ -1,8 +1,8 @@
 package com.pmstudios.stronger.respository;
 
 import com.pmstudios.stronger.entity.ExerciseCategory;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ExerciseCategoryRepository extends CrudRepository<ExerciseCategory, Long> {
+public interface ExerciseCategoryRepository extends JpaRepository<ExerciseCategory, Long> {
 
 }

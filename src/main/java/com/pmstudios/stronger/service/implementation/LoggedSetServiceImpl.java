@@ -1,10 +1,11 @@
-package com.pmstudios.stronger.service;
+package com.pmstudios.stronger.service.implementation;
 
 import com.pmstudios.stronger.entity.LoggedExercise;
 import com.pmstudios.stronger.entity.LoggedSet;
 import com.pmstudios.stronger.respository.ExerciseRepository;
 import com.pmstudios.stronger.respository.LoggedSetRepository;
 import com.pmstudios.stronger.respository.LoggedExerciseRepository;
+import com.pmstudios.stronger.service.LoggedSetService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,8 @@ public class LoggedSetServiceImpl implements LoggedSetService {
 
     @Override
     public List<LoggedSet> updateLoggedSets(List<LoggedSet> loggedSets, LoggedExercise loggedExercise) {
-        return loggedSets.stream().map(set -> saveLoggedSet(set, loggedExercise)).collect(Collectors.toList());
+        return loggedSets.stream()
+                .map(set -> saveLoggedSet(set, loggedExercise))
+                .collect(Collectors.toList());
     }
 }

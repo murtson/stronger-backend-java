@@ -13,9 +13,8 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "app_user")
+@Table(name = "users")
 public class User {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,6 +35,11 @@ public class User {
     @NonNull
     @Column(name = "email", nullable = false)
     private String email;
+
+    @NotBlank(message = "password must not be blank")
+    @NonNull
+    @Column(name = "password", nullable = false)
+    private String password;
 
     @JsonIgnoreProperties(value = { "user" })
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

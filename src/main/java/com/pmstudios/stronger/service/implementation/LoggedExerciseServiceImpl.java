@@ -1,39 +1,33 @@
-package com.pmstudios.stronger.service;
+package com.pmstudios.stronger.service.implementation;
 
 import com.pmstudios.stronger.entity.Exercise;
 import com.pmstudios.stronger.entity.LoggedExercise;
 import com.pmstudios.stronger.entity.LoggedSet;
 import com.pmstudios.stronger.entity.Workout;
-import com.pmstudios.stronger.exception.LoggedExerciseNotFoundException;
-import com.pmstudios.stronger.respository.ExerciseRepository;
+import com.pmstudios.stronger.exception.EntityNotFoundException;
 import com.pmstudios.stronger.respository.LoggedExerciseRepository;
-import com.pmstudios.stronger.respository.LoggedSetRepository;
-import com.pmstudios.stronger.respository.WorkoutRepository;
+import com.pmstudios.stronger.service.ExerciseService;
+import com.pmstudios.stronger.service.LoggedExerciseService;
+import com.pmstudios.stronger.service.LoggedSetService;
+import com.pmstudios.stronger.service.WorkoutService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 
 @AllArgsConstructor
 @Service
 public class LoggedExerciseServiceImpl implements LoggedExerciseService {
 
-
     LoggedExerciseRepository loggedExerciseRepository;
-
-
     WorkoutService workoutService;
-
     ExerciseService exerciseService;
     LoggedSetService loggedSetService;
 
     @Override
     public LoggedExercise getLoggedExercise(Long id) {
-        Optional<LoggedExercise> loggedExercise = loggedExerciseRepository.findById(id);
-        if (loggedExercise.isPresent()) return loggedExercise.get();
-        else throw new LoggedExerciseNotFoundException(id);
+        return loggedExerciseRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(id, LoggedExercise.class));
     }
 
     @Override

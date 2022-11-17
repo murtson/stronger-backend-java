@@ -1,17 +1,15 @@
-package com.pmstudios.stronger.service;
+package com.pmstudios.stronger.service.implementation;
 
 import com.pmstudios.stronger.entity.Exercise;
 import com.pmstudios.stronger.entity.ExerciseCategory;
-import com.pmstudios.stronger.exception.ExerciseNotFoundException;
-import com.pmstudios.stronger.exception.UserNotFoundException;
-import com.pmstudios.stronger.respository.ExerciseCategoryRepository;
+import com.pmstudios.stronger.exception.EntityNotFoundException;
 import com.pmstudios.stronger.respository.ExerciseRepository;
+import com.pmstudios.stronger.service.ExerciseCategoryService;
+import com.pmstudios.stronger.service.ExerciseService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -22,8 +20,8 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     @Override
     public Exercise getExercise(Long id) {
-        Optional<Exercise> exercise = exerciseRepository.findById(id);
-        return unwrapExercise(exercise, id);
+        return exerciseRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(id, Exercise.class));
     }
 
     @Override
@@ -40,17 +38,12 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     @Override
     public List<Exercise> getExercises() {
-        return (List<Exercise>)exerciseRepository.findAll();
+        return exerciseRepository.findAll();
     }
 
     @Override
     public List<Exercise> getExerciseCategoryExercises(Long exerciseCategoryId) {
         return exerciseRepository.findByExerciseCategoryId(exerciseCategoryId);
-    }
-
-    private Exercise unwrapExercise(Optional<Exercise> entity, Long id) {
-        if(entity.isPresent()) return entity.get();
-        else throw new ExerciseNotFoundException(id);
     }
 
 }

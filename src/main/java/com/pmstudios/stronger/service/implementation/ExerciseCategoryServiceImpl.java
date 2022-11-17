@@ -1,14 +1,13 @@
-package com.pmstudios.stronger.service;
+package com.pmstudios.stronger.service.implementation;
 
 import com.pmstudios.stronger.entity.ExerciseCategory;
-import com.pmstudios.stronger.exception.ExerciseCategoryNotFoundException;
+import com.pmstudios.stronger.exception.EntityNotFoundException;
 import com.pmstudios.stronger.respository.ExerciseCategoryRepository;
+import com.pmstudios.stronger.service.ExerciseCategoryService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -28,18 +27,13 @@ public class ExerciseCategoryServiceImpl implements ExerciseCategoryService {
 
     @Override
     public ExerciseCategory getExerciseCategory(Long id) {
-        Optional<ExerciseCategory> exerciseCategory = exerciseCategoryRepository.findById(id);
-        return unwrapExerciseCategory(exerciseCategory, id);
+        return exerciseCategoryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(id, ExerciseCategory.class));
     }
 
     @Override
     public List<ExerciseCategory> getExerciseCategories() {
-        return (List<ExerciseCategory>)exerciseCategoryRepository.findAll();
-    }
-
-    static ExerciseCategory unwrapExerciseCategory(Optional<ExerciseCategory> entity, Long id) {
-        if(entity.isPresent()) return entity.get();
-        else throw new ExerciseCategoryNotFoundException(id);
+        return exerciseCategoryRepository.findAll();
     }
 
 }

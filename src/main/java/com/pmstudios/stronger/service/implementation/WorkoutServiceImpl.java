@@ -1,16 +1,16 @@
-package com.pmstudios.stronger.service;
+package com.pmstudios.stronger.service.implementation;
 
 import com.pmstudios.stronger.entity.User;
 import com.pmstudios.stronger.entity.Workout;
-import com.pmstudios.stronger.exception.UserNotFoundException;
-import com.pmstudios.stronger.exception.WorkoutNotFoundException;
-import com.pmstudios.stronger.respository.UserRepository;
+import com.pmstudios.stronger.exception.EntityNotFoundException;
 import com.pmstudios.stronger.respository.WorkoutRepository;
+import com.pmstudios.stronger.service.UserService;
+import com.pmstudios.stronger.service.WorkoutService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @AllArgsConstructor
 @Service
@@ -21,8 +21,8 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     @Override
     public Workout getWorkout(Long id) {
-        Optional<Workout> workout = workoutRepository.findById(id);
-        return unwrapWorkout(workout, id);
+        return workoutRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(id, Workout.class));
     }
 
     @Override
@@ -39,17 +39,12 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     @Override
     public List<Workout> getWorkouts() {
-        return (List<Workout>) workoutRepository.findAll();
+        return workoutRepository.findAll();
     }
 
     @Override
     public List<Workout> getUserWorkouts(Long userId) {
         return workoutRepository.findByUserId(userId);
-    }
-
-    private Workout unwrapWorkout(Optional<Workout> entity, Long id) {
-        if (entity.isPresent()) return entity.get();
-        else throw new WorkoutNotFoundException(id);
     }
 
 }

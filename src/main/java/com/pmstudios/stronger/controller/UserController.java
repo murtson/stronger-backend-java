@@ -31,7 +31,7 @@ public class UserController {
     }
 
     @PostMapping()
-    public ResponseEntity<User> saveUser(@Valid @RequestBody User user) {
+    public ResponseEntity<User> registerUser(@Valid @RequestBody User user) {
         User createdUser = userService.saveUser(user);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
@@ -40,6 +40,12 @@ public class UserController {
     public ResponseEntity<HttpStatus> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PostMapping(value = "/login")
+    public ResponseEntity<User> loginUser(@RequestBody User user) {
+        User authenticatedUser = userService.autheticateUser(user);
+        return new ResponseEntity<>(authenticatedUser, HttpStatus.OK);
     }
 
 
