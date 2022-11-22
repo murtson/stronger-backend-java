@@ -1,6 +1,7 @@
 package com.pmstudios.stronger.loggedExercise;
 
 import com.pmstudios.stronger.loggedSet.LoggedSet;
+import com.pmstudios.stronger.loggedSet.UpdateLoggedSetDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,11 @@ public class LoggedExerciseController {
     LoggedExerciseService loggedExerciseService;
 
     @PostMapping("/workout/{workoutId}/exercise/{exerciseId}")
-    ResponseEntity<LoggedExercise> createLoggedExercise(@Valid @RequestBody LoggedExercise loggedExercise, @PathVariable Long workoutId, @PathVariable Long exerciseId) {
+    ResponseEntity<LoggedExercise> createLoggedExercise(
+            @Valid @RequestBody LoggedExercise loggedExercise,
+            @PathVariable Long workoutId,
+            @PathVariable Long exerciseId
+    ) {
         LoggedExercise createdLoggedExercise = loggedExerciseService.saveLoggedExercise(loggedExercise, workoutId, exerciseId);
         return new ResponseEntity<>(createdLoggedExercise, HttpStatus.CREATED);
     }
@@ -25,6 +30,7 @@ public class LoggedExerciseController {
     @GetMapping("/{id}")
     ResponseEntity<LoggedExercise> getLoggedExercise(@PathVariable Long id) {
         LoggedExercise loggedExercise = loggedExerciseService.getLoggedExercise(id);
+//        if(loggedExercise.getLoggedSets().isEmpty()) return deleteLoggedExercise(id);
         return new ResponseEntity<>(loggedExercise, HttpStatus.OK);
     }
 
@@ -35,7 +41,10 @@ public class LoggedExerciseController {
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<LoggedExercise> updatedLoggedExerciseSets( @PathVariable Long id, @Valid @RequestBody List<LoggedSet> updatedSets) {
+    ResponseEntity<LoggedExercise> updatedLoggedExerciseSets(
+            @PathVariable Long id,
+            @Valid @RequestBody List<UpdateLoggedSetDTO> updatedSets
+    ) {
         LoggedExercise updatedLoggedExercise = loggedExerciseService.updateLoggedExerciseSets(id, updatedSets);
         return new ResponseEntity<>(updatedLoggedExercise, HttpStatus.OK);
     }

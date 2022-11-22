@@ -2,6 +2,7 @@ package com.pmstudios.stronger.loggedExercise;
 
 import com.pmstudios.stronger.exercise.Exercise;
 import com.pmstudios.stronger.loggedSet.LoggedSet;
+import com.pmstudios.stronger.loggedSet.UpdateLoggedSetDTO;
 import com.pmstudios.stronger.workout.Workout;
 import com.pmstudios.stronger.exception.EntityNotFoundException;
 import com.pmstudios.stronger.exercise.ExerciseService;
@@ -10,6 +11,8 @@ import com.pmstudios.stronger.workout.WorkoutService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.List;
 
 @AllArgsConstructor
@@ -23,7 +26,7 @@ public class LoggedExerciseServiceImpl implements LoggedExerciseService {
 
     @Override
     public LoggedExercise getLoggedExercise(Long id) {
-        return loggedExerciseRepository.findById(id)
+         return loggedExerciseRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(id, LoggedExercise.class));
     }
 
@@ -37,10 +40,12 @@ public class LoggedExerciseServiceImpl implements LoggedExerciseService {
     }
 
     @Override
-    public LoggedExercise updateLoggedExerciseSets(Long loggedExerciseId, List<LoggedSet> loggedSets) {
+    public LoggedExercise updateLoggedExerciseSets(Long loggedExerciseId, List<UpdateLoggedSetDTO> loggedSets) {
         LoggedExercise loggedExercise = this.getLoggedExercise(loggedExerciseId);
         List<LoggedSet> updatedSets = loggedSetService.updateLoggedSets(loggedSets, loggedExercise);
+        BigDecimal exerciseTopSet = getTopSet(updatedSets);
         loggedExercise.setLoggedSets(updatedSets);
+        loggedExercise.setExerciseTopSet(exerciseTopSet);
         return loggedExercise;
     }
 
@@ -52,6 +57,14 @@ public class LoggedExerciseServiceImpl implements LoggedExerciseService {
     @Override
     public List<LoggedExercise> getWorkoutLoggedExercises(Long workoutId) {
         return loggedExerciseRepository.findByWorkoutId(workoutId);
+    }
+
+
+    private BigDecimal getTopSet(List<LoggedSet> loggedSets) {
+        return (loggedSets.isEmpty()) ? null : loggedSets
+                .stream()
+                .max(Comparator.comparing(LoggedSet::getEstimatedOneRepMax))
+                .get().getEstimatedOneRepMax();
     }
 
 

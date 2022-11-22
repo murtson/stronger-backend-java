@@ -58,10 +58,8 @@ public class WorkoutServiceImpl implements WorkoutService {
         return workoutRepository.findAllByStartDateBetweenAndUserId(fromDate, toDate, userId);
     }
 
-
-
     private void checkValidWorkoutStatus(Workout workout) {
-        // TODO: is this the right way to check for this? Or should this be done in validators?
+        // TODO: is this the right way to check for this? Or should this be done in validators or a constraint in the db?
        LocalDateTime startDate = workout.getStartDate();
        WorkoutStatus status = workout.getWorkoutStatus();
 

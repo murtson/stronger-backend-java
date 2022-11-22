@@ -7,6 +7,7 @@ import com.pmstudios.stronger.exercise.Exercise;
 import lombok.*;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.List;
 
 @AllArgsConstructor
@@ -21,6 +22,9 @@ public class LoggedExercise {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "exercise_top_set")
+    private BigDecimal exerciseTopSet;
 
     @JsonIgnoreProperties(value = { "loggedExercise" })
     @OneToMany(mappedBy = "loggedExercise", cascade = CascadeType.ALL)

@@ -24,8 +24,8 @@ public class LoggedSet {
     private Long id;
 
     // TODO: research on how to validate float
-    @DecimalMin(value = "0", inclusive = true)
-    @DecimalMax(value = "10.0", inclusive = true)
+//    @DecimalMin(value = "0", inclusive = true)
+//    @DecimalMax(value = "10.0", inclusive = true)
     @NonNull
     @Column(name = "weight")
     private BigDecimal weight;
@@ -36,9 +36,15 @@ public class LoggedSet {
     @Column(name = "reps")
     private int reps;
 
+    // TODO: research on how to validate float
+    @NonNull
+    @Column(name = "estimated_one_rep_max")
+    private BigDecimal estimatedOneRepMax;
+
     @JsonIgnoreProperties(value = { "loggedSets" })
     @ManyToOne(optional = false)
     @JoinColumn(name = "logged_exercise_id", referencedColumnName = "id")
     private LoggedExercise loggedExercise;
+
 
 }
