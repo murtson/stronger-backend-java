@@ -8,6 +8,7 @@ import com.pmstudios.stronger.exception.EntityNotFoundException;
 import com.pmstudios.stronger.exerciseCategory.ExerciseCategoryRepository;
 import com.pmstudios.stronger.exercise.ExerciseRepository;
 import com.pmstudios.stronger.user.UserRepository;
+import com.pmstudios.stronger.workout.WorkoutRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -71,15 +72,17 @@ public class LoadInitialData implements ApplicationRunner {
             new Exercise("Crunches"),
             new Exercise("Plank")
     };
+    private final WorkoutRepository workoutRepository;
 
-    public LoadInitialData() {
+    public LoadInitialData(WorkoutRepository workoutRepository) {
+        this.workoutRepository = workoutRepository;
     }
 
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
 
-        // populate with db with test users
+        // populate db with test users
         for (User user : testUsers) userRepository.save(user);
 
         // populate db with test categories

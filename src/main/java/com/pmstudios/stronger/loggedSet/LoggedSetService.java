@@ -1,17 +1,21 @@
 package com.pmstudios.stronger.loggedSet;
 
 import com.pmstudios.stronger.loggedExercise.LoggedExercise;
+import com.pmstudios.stronger.loggedSet.dto.LoggedSetUpdateDto;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 public interface LoggedSetService {
 
 
-    LoggedSet saveLoggedSet(LoggedSet loggedSet, LoggedExercise loggedExercise);
+    LoggedSet saveLoggedSet(LoggedSet loggedSet);
 
-    List<LoggedSet> updateLoggedSets(List<UpdateLoggedSetDTO> loggedSets, LoggedExercise loggedExercise);
+    List<LoggedSet> updateLoggedSets(Long loggedExerciseId, List<LoggedSet> loggedSets);
 
-    void deleteAllByLoggedExerciseId(Long loggedExerciseID);
+    void deleteByLoggedExerciseId(Long loggedExerciseId);
+
+    LoggedSet getBestLoggedSet(List<LoggedSet> loggedSets);
+
+    List<LoggedSet> getByRepsAndExerciseAndUserId(int reps, Long exerciseId, Long userId);
 
 }

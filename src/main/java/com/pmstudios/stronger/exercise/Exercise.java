@@ -3,6 +3,7 @@ package com.pmstudios.stronger.exercise;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.pmstudios.stronger.exercisePr.ExercisePr;
 import com.pmstudios.stronger.exerciseCategory.ExerciseCategory;
 import com.pmstudios.stronger.loggedExercise.LoggedExercise;
 import lombok.*;
@@ -10,6 +11,7 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -38,5 +40,14 @@ public class Exercise {
     @JsonIgnore
     @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL)
     private List<LoggedExercise> loggedExercises;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL)
+    private Set<ExercisePr> exercisePR;
+
+//    @JsonIgnoreProperties(value = {"exericse"})
+//    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JoinColumn(name = "exercise_pr_id", referencedColumnName = "id")
+//    private ExercisePr exercisePR;
 
 }

@@ -1,6 +1,7 @@
 package com.pmstudios.stronger.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.pmstudios.stronger.exercisePr.ExercisePr;
 import com.pmstudios.stronger.workout.Workout;
 import lombok.*;
 
@@ -45,4 +46,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Workout> workouts;
 
+    @JsonIgnoreProperties(value = { "user" })
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<ExercisePr> exercisePersonalRecords;
 }

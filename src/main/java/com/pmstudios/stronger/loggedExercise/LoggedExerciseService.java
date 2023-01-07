@@ -1,7 +1,6 @@
 package com.pmstudios.stronger.loggedExercise;
 
-import com.pmstudios.stronger.loggedSet.LoggedSet;
-import com.pmstudios.stronger.loggedSet.UpdateLoggedSetDTO;
+import com.pmstudios.stronger.loggedExercise.dto.LoggedExerciseDto;
 
 import java.util.List;
 
@@ -11,10 +10,12 @@ public interface LoggedExerciseService {
 
     LoggedExercise saveLoggedExercise(LoggedExercise loggedExercise, Long workoutId, Long exerciseId);
 
-    LoggedExercise updateLoggedExerciseSets(Long loggedExerciseId, List<UpdateLoggedSetDTO> updatedSets);
+    LoggedExercise save(LoggedExercise loggedExercise);
 
     void deleteLoggedExercise(Long id);
 
-    List<LoggedExercise> getWorkoutLoggedExercises(Long workoutId);
+    List<LoggedExercise> getLoggedExercisesByWorkoutId(Long workoutId);
+
+    List<LoggedExercise> getLoggedExercisesByExerciseIdAndUserId(Long exerciseId, Long userId);
 
 }

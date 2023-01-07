@@ -47,7 +47,7 @@ public class Workout {
     private User user;
 
     @JsonIgnoreProperties(value = { "workout" })
-    @OneToMany(mappedBy = "workout")
+    @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL)
     private List<LoggedExercise> loggedExercises;
 
 }

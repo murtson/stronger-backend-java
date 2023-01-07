@@ -1,14 +1,13 @@
 package com.pmstudios.stronger.loggedSet;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.pmstudios.stronger.exercisePr.ExercisePr;
 import com.pmstudios.stronger.loggedExercise.LoggedExercise;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.DecimalMax;
-import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Min;
-import java.math.BigDecimal;
 
 @RequiredArgsConstructor
 @NoArgsConstructor
@@ -23,28 +22,31 @@ public class LoggedSet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // TODO: research on how to validate float
-//    @DecimalMin(value = "0", inclusive = true)
-//    @DecimalMax(value = "10.0", inclusive = true)
     @NonNull
     @Column(name = "weight")
-    private BigDecimal weight;
+    private Double weight;
 
-    // TODO: research on how to validate int
     @Min(value = 0L, message = "reps must be positive")
     @NonNull
     @Column(name = "reps")
-    private int reps;
+    private Integer reps;
 
-    // TODO: research on how to validate float
     @NonNull
     @Column(name = "estimated_one_rep_max")
-    private BigDecimal estimatedOneRepMax;
+    private Double estimatedOneRepMax;
 
-    @JsonIgnoreProperties(value = { "loggedSets" })
+    @NonNull
+    @Column(name = "is_best_set")
+    private boolean isBestSet;
+
+    @JsonIgnore
     @ManyToOne(optional = false)
     @JoinColumn(name = "logged_exercise_id", referencedColumnName = "id")
     private LoggedExercise loggedExercise;
 
+    // TODO: perhaps have a join table instead (to remove NULL-values)
+    @JsonIgnoreProperties(value = { "loggedSet" })
+    @OneToOne(mappedBy = "loggedSet", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ExercisePr exercisePr;
 
 }

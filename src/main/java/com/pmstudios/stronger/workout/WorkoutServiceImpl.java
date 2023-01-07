@@ -1,9 +1,11 @@
 package com.pmstudios.stronger.workout;
 
+import com.pmstudios.stronger.loggedExercise.LoggedExerciseService;
 import com.pmstudios.stronger.user.User;
 import com.pmstudios.stronger.exception.EntityNotFoundException;
 import com.pmstudios.stronger.user.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -20,8 +22,17 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     @Override
     public Workout getWorkout(Long id) {
+
         return workoutRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(id, Workout.class));
+
+        // remove empty LoggedSets
+//        workout.getLoggedExercises().forEach(loggedExercise -> {
+//            if(loggedExercise.getLoggedSets().isEmpty())
+//                loggedExerciseService.deleteLoggedExercise(loggedExercise.getId());
+//        });
+
+
     }
 
     @Override
