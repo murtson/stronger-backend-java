@@ -1,5 +1,7 @@
 package com.pmstudios.stronger.workout;
 
+import com.pmstudios.stronger.workout.dto.WorkoutDto;
+import com.pmstudios.stronger.workout.dto.WorkoutMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -16,17 +18,20 @@ import java.util.List;
 public class WorkoutController {
 
     WorkoutService workoutService;
+    WorkoutMapper mapper;
 
     @GetMapping("/{id}")
-    ResponseEntity<Workout> getWorkout(@PathVariable Long id) {
+    ResponseEntity<WorkoutDto> getWorkout(@PathVariable Long id) {
         Workout workout = workoutService.getWorkout(id);
-        return new ResponseEntity<>(workout, HttpStatus.OK);
+        WorkoutDto workoutDto = mapper.entityToDto(workout);
+        return new ResponseEntity<>(workoutDto, HttpStatus.OK);
     }
 
     @PostMapping("/user/{userId}")
-    ResponseEntity<Workout> createWorkout(@RequestBody @Valid Workout workout, @PathVariable Long userId) {
+    ResponseEntity<WorkoutDto> createWorkout(@RequestBody @Valid Workout workout, @PathVariable Long userId) {
         Workout createdWorkout = workoutService.createWorkout(workout, userId);
-        return new ResponseEntity<>(createdWorkout, HttpStatus.CREATED);
+        WorkoutDto createdWorkoutDto = mapper.entityToDto(createdWorkout);
+        return new ResponseEntity<>(createdWorkoutDto, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")

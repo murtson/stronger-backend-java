@@ -53,4 +53,11 @@ public class ExercisePr {
     @JoinColumn(name = "exercise_pr_id", referencedColumnName = "id")
     private LoggedSet loggedSet;
 
+    public static ExercisePr from(LoggedSet loggedSet) {
+        return new ExercisePr(
+                loggedSet.getWeight(), loggedSet.getReps(),
+                loggedSet.getEstimatedOneRepMax(), loggedSet.getLoggedExercise().getWorkout().getUser(),
+                loggedSet.getLoggedExercise().getExercise(), loggedSet);
+    }
+
 }

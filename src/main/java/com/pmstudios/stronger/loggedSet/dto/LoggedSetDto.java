@@ -25,4 +25,7 @@ public class LoggedSetDto {
     @NonNull
     boolean isPersonalRecord;
 
+    @NonNull
+    boolean isTopLoggedSet;
+
 }

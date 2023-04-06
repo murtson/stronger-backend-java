@@ -1,6 +1,7 @@
 package com.pmstudios.stronger.exercisePr;
 
 import com.pmstudios.stronger.exercise.Exercise;
+import com.pmstudios.stronger.loggedSet.LoggedSet;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +14,16 @@ public class ExercisePrServiceImpl implements ExercisePrService {
     ExercisePrRepository exercisePrRepository;
 
     @Override
-    public void deleteExercisePR(Long Id) { exercisePrRepository.deleteById(Id); }
+    public void deleteExercisePr(ExercisePr exercisePr) {
+        LoggedSet loggedSet = exercisePr.getLoggedSet();
+        loggedSet.setExercisePr(null);
+        exercisePrRepository.delete(exercisePr);
+    }
+
+    @Override
+    public void deleteExercisePrById(Long exercisePrId) {
+        exercisePrRepository.deleteById(exercisePrId);
+    }
 
     @Override
     public ExercisePr saveExercisePr(ExercisePr exercisePr) {

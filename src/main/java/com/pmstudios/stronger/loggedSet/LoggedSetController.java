@@ -18,17 +18,18 @@ public class LoggedSetController {
     LoggedSetService loggedSetService;
     LoggedSetMapper mapper;
 
-    @PutMapping("/logged-exercise/{loggedExerciseId}")
-    ResponseEntity<List<LoggedSetDto>> updatedLoggedExerciseSets(@PathVariable Long loggedExerciseId,
-                                                              @RequestBody List<LoggedSetUpdateDto> loggedSetUpdateDto) {
+    @PostMapping("/logged-exercise/{loggedExerciseId}")
+    ResponseEntity<List<LoggedSetDto>> createLoggedSet(@PathVariable Long loggedExerciseId,
+                                                 @RequestBody LoggedSetUpdateDto request) {
 
-        List<LoggedSet> loggedSets = loggedSetUpdateDto.stream().map(set -> mapper.dtoToEntity(set)).toList();
+        LoggedSet loggedSet = mapper.dtoToEntity(request);
 
-        List<LoggedSet> updatedLoggedSets = loggedSetService.updateLoggedSets(loggedExerciseId, loggedSets);
+        List<LoggedSet> savedLoggedSet = loggedSetService.createLoggedSet(loggedExerciseId, loggedSet);
 
-        List<LoggedSetDto> updatedLoggedSetsDto = updatedLoggedSets.stream().map(set -> mapper.entityToDto(set)).toList();
+        List<LoggedSetDto> loggedSetDtos = savedLoggedSet.stream().map(set -> mapper.entityToDto(set)).toList();
 
-        return new ResponseEntity<>(updatedLoggedSetsDto, HttpStatus.OK);
+        return new ResponseEntity<>(loggedSetDtos, HttpStatus.CREATED);
+
     }
 
     @GetMapping("/exercise/{exerciseId}/reps/{repsAmount}")

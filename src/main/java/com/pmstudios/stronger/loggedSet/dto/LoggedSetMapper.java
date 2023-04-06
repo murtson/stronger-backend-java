@@ -1,7 +1,9 @@
 package com.pmstudios.stronger.loggedSet.dto;
 
+import com.pmstudios.stronger.NumberUtility;
 import com.pmstudios.stronger.loggedExercise.LoggedExercise;
 import com.pmstudios.stronger.loggedSet.LoggedSet;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,16 +17,16 @@ public class LoggedSetMapper {
     public LoggedSetDto entityToDto(LoggedSet entity) {
         if(entity == null) return null;
         boolean isPersonalRecord = entity.getExercisePr() != null;
-        return new LoggedSetDto(entity.getId(), entity.getWeight(), entity.getReps(), entity.getEstimatedOneRepMax(), isPersonalRecord);
+        return new LoggedSetDto(entity.getId(), entity.getWeight(), entity.getReps(), entity.getEstimatedOneRepMax(), isPersonalRecord, entity.isTopLoggedSet());
     }
 
     private Double getOneRepMaxEstimate(Double weight, int reps) {
+        if(reps == 1) return weight;
         // We use the Brzycki formula from Matt Brzycki to calculate 1RM: weight / (1.0278 - 0.0287 * reps)
-        // TODO: fix rounding
         Double divisor = 1.0278 - 0.0287 * reps;
-        return weight / divisor;
-        // return weight.divide(divisor, 3, RoundingMode.DOWN);
+        return NumberUtility.round(weight / divisor, 2);
     }
+
 
 
 }

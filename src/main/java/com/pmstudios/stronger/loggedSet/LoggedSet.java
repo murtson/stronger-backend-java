@@ -36,8 +36,8 @@ public class LoggedSet {
     private Double estimatedOneRepMax;
 
     @NonNull
-    @Column(name = "is_best_set")
-    private boolean isBestSet;
+    @Column(name = "is_top_logged_set")
+    private boolean isTopLoggedSet;
 
     @JsonIgnore
     @ManyToOne(optional = false)
