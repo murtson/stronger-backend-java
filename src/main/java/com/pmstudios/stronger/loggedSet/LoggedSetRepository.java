@@ -7,6 +7,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 public interface LoggedSetRepository extends JpaRepository<LoggedSet, Long> {
+
     List<LoggedSet> findByLoggedExercise(Long loggedExercise);
 
     @Transactional

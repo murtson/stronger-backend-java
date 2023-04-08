@@ -1,5 +1,6 @@
 package com.pmstudios.stronger.loggedSet;
 
+import com.pmstudios.stronger.exception.EntityNotFoundException;
 import com.pmstudios.stronger.exercisePr.ExercisePr;
 import com.pmstudios.stronger.exercisePr.ExercisePrService;
 import com.pmstudios.stronger.loggedExercise.LoggedExercise;
@@ -7,6 +8,7 @@ import com.pmstudios.stronger.loggedExercise.LoggedExerciseService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.*;
 
 @AllArgsConstructor
@@ -18,8 +20,19 @@ public class LoggedSetServiceImpl implements LoggedSetService {
     LoggedExerciseService loggedExerciseService;
 
     @Override
-    public LoggedSet saveLoggedSet(LoggedSet set) {
+    public LoggedSet getById(Long id) {
+        return loggedSetRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(id, LoggedSet.class));
+    }
+
+    @Override
+    public LoggedSet save(LoggedSet set) {
         return loggedSetRepository.save(set);
+    }
+
+    @Override
+    public void delete(LoggedSet loggedSet) {
+        loggedSetRepository.delete(loggedSet);
     }
 
     @Override
@@ -33,18 +46,19 @@ public class LoggedSetServiceImpl implements LoggedSetService {
         return loggedSetRepository.findByRepsAndLoggedExercise_Exercise_IdAndLoggedExercise_Workout_User_Id(reps, exerciseId, userId);
     }
 
+    @Transactional
     @Override
-    public List<LoggedSet> createLoggedSet(Long loggedExerciseId, LoggedSet loggedSet) {
+    public List<LoggedSet> addLoggedSet(Long loggedExerciseId, LoggedSet loggedSet) {
         LoggedExercise loggedExercise = loggedExerciseService.getLoggedExercise(loggedExerciseId);
         List<LoggedSet> previousLoggedSets = loggedExercise.getLoggedSets();
 
         loggedSet.setLoggedExercise(loggedExercise);
 
-        updateExercisePrIfImproved(loggedExercise, loggedSet);
+        updateExercisePrWhenLoggedSetIsAdded(loggedExercise, loggedSet);
 
-        updateTopLoggedSetIfImproved(loggedSet, previousLoggedSets);
+        updateTopLoggedSetWhenLoggedSetIsAdded(loggedSet, previousLoggedSets);
 
-        saveLoggedSet(loggedSet);
+        save(loggedSet);
 
         List<LoggedSet> response = new ArrayList<>(previousLoggedSets);
         response.add(loggedSet);
@@ -52,38 +66,20 @@ public class LoggedSetServiceImpl implements LoggedSetService {
 
     }
 
-    public void updateTopLoggedSetIfImproved(LoggedSet loggedSetToBeCompare, List<LoggedSet> previousLoggedSets) {
-        boolean isNewTopSet = isNewTopLoggedSet(loggedSetToBeCompare, previousLoggedSets);
+    private void updateTopLoggedSetWhenLoggedSetIsAdded(LoggedSet loggedSetToBeAdded, List<LoggedSet> previousLoggedSets) {
+        boolean isNewTopSet = isNewTopLoggedSet(loggedSetToBeAdded, previousLoggedSets);
         if(!isNewTopSet) return;
 
-        LoggedSet previousTopSet = getTopLoggedSet(previousLoggedSets);
+        LoggedSet previousTopSet = getLoggedSetWithHighestEORM(previousLoggedSets);
         if(previousTopSet != null) {
             previousTopSet.setTopLoggedSet(false);
-            saveLoggedSet(previousTopSet);
+            save(previousTopSet);
         };
 
-        loggedSetToBeCompare.setTopLoggedSet(true);
+        loggedSetToBeAdded.setTopLoggedSet(true);
     }
 
-    @Override
-    public boolean isNewTopLoggedSet(LoggedSet newLoggedSet, List<LoggedSet> previousLoggedSets) {
-        double previousTopSet = previousLoggedSets.stream()
-                .mapToDouble(LoggedSet::getEstimatedOneRepMax)
-                .max()
-                .orElse(Double.NEGATIVE_INFINITY);
-
-        return previousTopSet < newLoggedSet.getEstimatedOneRepMax();
-    }
-
-    @Override
-    public LoggedSet getTopLoggedSet(List<LoggedSet> loggedSets) {
-        return (loggedSets.isEmpty()) ? null : loggedSets
-                .stream()
-                .max(Comparator.comparing(LoggedSet::getEstimatedOneRepMax))
-                .get();
-    }
-    @Override
-    public void updateExercisePrIfImproved(LoggedExercise loggedExercise, LoggedSet loggedSet) {
+    private void updateExercisePrWhenLoggedSetIsAdded(LoggedExercise loggedExercise, LoggedSet loggedSet) {
 
         Long exerciseId = loggedExercise.getExercise().getId();
         Long userId = loggedExercise.getWorkout().getUser().getId();
@@ -111,75 +107,72 @@ public class LoggedSetServiceImpl implements LoggedSetService {
 
     }
 
+    @Transactional
+    @Override
+    public List<LoggedSet> removeLoggedSet(Long loggedSetId) {
+
+        LoggedSet loggedSetToBeRemoved = getById(loggedSetId);
+
+        Integer repsToEvaluate = loggedSetToBeRemoved.getReps();
+        Long exerciseIdToEvaluate = loggedSetToBeRemoved.getLoggedExercise().getExercise().getId();
+        Long userId = loggedSetToBeRemoved.getLoggedExercise().getWorkout().getUser().getId();
+
+        Long loggedExerciseId = loggedSetToBeRemoved.getLoggedExercise().getId();
+
+        boolean shouldUpdateExercisePr = loggedSetToBeRemoved.getExercisePr() != null;
+        boolean shouldUpdateTopLoggedSet = loggedSetToBeRemoved.isTopLoggedSet();
+
+        delete(loggedSetToBeRemoved);
+
+        List<LoggedSet> loggedSetsAfterDeletion = loggedExerciseService
+                .getLoggedExercise(loggedExerciseId)
+                .getLoggedSets();
+
+        if(shouldUpdateExercisePr) {
+            updateExercisePrWhenLoggedSetIsDeleted(repsToEvaluate, exerciseIdToEvaluate, userId);
+        }
+
+        if(shouldUpdateTopLoggedSet) {
+            updateTopLoggedSetWhenLoggedSetIsDeleted(loggedSetsAfterDeletion);
+        }
+
+        return loggedSetsAfterDeletion;
+    }
+
+    private void updateExercisePrWhenLoggedSetIsDeleted(Integer reps, Long exerciseId, Long userId) {
+
+        List<LoggedSet> historyLoggedSets = getByRepsAndExerciseAndUserId(reps, exerciseId, userId);
+
+        if(historyLoggedSets.isEmpty()) return;
+
+        LoggedSet loggedSetToUpdate = getLoggedSetWithHighestEORM(historyLoggedSets);
+        ExercisePr newExercisePr = ExercisePr.from(loggedSetToUpdate);
+
+        loggedSetToUpdate.setExercisePr(newExercisePr);
+        save(loggedSetToUpdate);
+    }
+
+    private void updateTopLoggedSetWhenLoggedSetIsDeleted(List<LoggedSet> loggedSets) {
+        if(loggedSets.isEmpty()) return;
+        LoggedSet loggedSetToUpdate = getLoggedSetWithHighestEORM(loggedSets);
+        loggedSetToUpdate.setTopLoggedSet(true);
+        save(loggedSetToUpdate);
+    }
+
+    private boolean isNewTopLoggedSet(LoggedSet newLoggedSet, List<LoggedSet> previousLoggedSets) {
+        double previousTopSet = previousLoggedSets.stream()
+                .mapToDouble(LoggedSet::getEstimatedOneRepMax)
+                .max()
+                .orElse(Double.NEGATIVE_INFINITY);
+
+        return previousTopSet < newLoggedSet.getEstimatedOneRepMax();
+    }
+
+    private LoggedSet getLoggedSetWithHighestEORM(List<LoggedSet> loggedSets) {
+        return (loggedSets.isEmpty()) ? null : loggedSets
+                .stream()
+                .max(Comparator.comparing(LoggedSet::getEstimatedOneRepMax))
+                .get();
+    }
+
 }
-
-
-//    @Override
-//    public List<LoggedSet> updateLoggedSets(Long loggedExerciseId, List<LoggedSet> loggedSets) {
-//
-//        LoggedExercise loggedExercise = loggedExerciseService.getLoggedExercise(loggedExerciseId);
-//        Long exerciseId = loggedExercise.getExercise().getId();
-//        Long userId = loggedExercise.getWorkout().getUser().getId();
-//
-//        List<Integer> repsToBeEvaluated = new ArrayList<>();
-//        loggedExercise.getLoggedSets().forEach(set -> {
-//            if(set.getExercisePr() != null) repsToBeEvaluated.add(set.getReps());
-//        });
-//
-//        loggedExercise.getLoggedSets().clear();
-//        loggedExerciseService.save(loggedExercise);
-//
-//        repsToBeEvaluated.forEach(rep -> {
-//            List<LoggedSet> allLoggedSetsByReps = getByRepsAndExerciseAndUserId(rep, exerciseId, userId);
-//            LoggedSet topLoggedSet = getTopLoggedSet(allLoggedSetsByReps);
-//            LoggedSet updatedLoggedSet = setExercisePr(topLoggedSet);
-//            saveLoggedSet(updatedLoggedSet);
-//        });
-//
-//        //deleteByLoggedExerciseId(loggedExercise.getId());
-//        loggedSets.forEach(set -> set.setLoggedExercise(loggedExercise));
-//        LoggedSet topLoggedSet = getTopLoggedSet(loggedSets);
-//        topLoggedSet.setTopLoggedSet(true);
-//
-//        return loggedSets.stream()
-//                .map(this::configureExercisePr)
-//                .map(this::saveLoggedSet)
-//                .toList();
-//
-//    }
-
-
-//    private LoggedSet configureExercisePr(LoggedSet loggedSet) {
-//        Integer reps = loggedSet.getReps();
-//        Long exerciseId = loggedSet.getLoggedExercise().getExercise().getId();
-//        Long userId = loggedSet.getLoggedExercise().getWorkout().getUser().getId();
-//        ExercisePr currentExercisePR = exercisePrService.getByRepsAndExerciseAndUserId(reps, exerciseId, userId);
-//
-//        if(currentExercisePR == null) {
-//            System.out.println("No current PR");
-//            return this.setExercisePr(loggedSet);
-//        };
-//
-//        Double currentEORM = currentExercisePR.getEstimatedOneRepMax();
-//        Double setEORM = loggedSet.getEstimatedOneRepMax();
-//
-//        boolean isNotANewPersonalRecord = Double.compare(currentEORM, setEORM) >= 0;
-//        if(isNotANewPersonalRecord) {
-//            System.out.println("current: " + currentEORM);
-//            System.out.println("set: " + setEORM);
-//            System.out.println("Is NOT a new PR");
-//            return loggedSet;
-//        }
-//
-//
-//        System.out.println("Is a new PR");
-//        System.out.println("delete this: " + currentExercisePR.getId());
-//
-//        LoggedSet loggedSetWithCurrentPr = currentExercisePR.getLoggedSet();
-//        // Seems to have something to do with one-to-one
-//        loggedSetWithCurrentPr.setExercisePr(null);
-//        exercisePrService.deleteExercisePR(currentExercisePR.getId());
-//        // saveLoggedSet(currentPrLoggedSet);
-//
-//        return setExercisePr(loggedSet);
-//    }

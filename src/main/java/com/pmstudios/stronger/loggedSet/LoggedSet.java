@@ -14,7 +14,9 @@ import javax.validation.constraints.Min;
 @Getter
 @Setter
 @Entity
-@Table(name = "logged_set")
+@Table(name = "logged_set", uniqueConstraints = {
+        @UniqueConstraint(columnNames = { "logged_exercise_id", "is_top_logged_set" })
+})
 public class LoggedSet {
 
     @Id

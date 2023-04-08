@@ -18,7 +18,6 @@ import javax.validation.constraints.NotNull;
 @Table(name = "exercise_pr", uniqueConstraints = {@UniqueConstraint(name = "UniqueUserExerciseAndReps", columnNames = {"reps", "user_id", "exercise_id"})})
 public class ExercisePr {
 
-
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

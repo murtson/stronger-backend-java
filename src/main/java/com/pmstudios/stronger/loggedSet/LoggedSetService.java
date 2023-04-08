@@ -7,18 +7,19 @@ import java.util.List;
 public interface LoggedSetService {
 
 
-    LoggedSet saveLoggedSet(LoggedSet loggedSet);
+    LoggedSet getById(Long id);
+
+    LoggedSet save(LoggedSet loggedSet);
+
+    void delete(LoggedSet loggedSet);
 
     void deleteByLoggedExerciseId(Long loggedExerciseId);
 
-    LoggedSet getTopLoggedSet(List<LoggedSet> loggedSets);
-
     List<LoggedSet> getByRepsAndExerciseAndUserId(int reps, Long exerciseId, Long userId);
 
-    List<LoggedSet> createLoggedSet(Long loggedExerciseId, LoggedSet loggedSet);
+    List<LoggedSet> addLoggedSet(Long loggedExerciseId, LoggedSet loggedSet);
 
-    boolean isNewTopLoggedSet(LoggedSet newLoggedSet, List<LoggedSet> previousLoggedSets);
+    List<LoggedSet> removeLoggedSet(Long loggedSetId);
 
-    void updateExercisePrIfImproved(LoggedExercise loggedExercise, LoggedSet loggedSet);
 
 }
