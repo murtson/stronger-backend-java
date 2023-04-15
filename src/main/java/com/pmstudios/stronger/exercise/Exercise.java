@@ -13,11 +13,11 @@ import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.Set;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @Entity
-@RequiredArgsConstructor
-@NoArgsConstructor
 @Table(name = "exercise")
 public class Exercise {
 
@@ -32,6 +32,7 @@ public class Exercise {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
+    @NonNull
     @JsonIgnoreProperties(value = { "exercises" })
     @ManyToOne(optional = false)
     @JoinColumn(name = "exercise_category_id", referencedColumnName = "id")

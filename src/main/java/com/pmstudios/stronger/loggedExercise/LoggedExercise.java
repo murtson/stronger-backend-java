@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
@@ -24,12 +24,15 @@ public class LoggedExercise {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @NonNull
+    @NotNull(message = "workout cannot be null")
     @JsonIgnoreProperties(value = {"loggedExercises", "user"})
     @ManyToOne(optional = false)
     @JoinColumn(name = "workout_id", referencedColumnName = "id")
     private Workout workout;
 
+    @NonNull
+    @NotNull(message = "exercise cannot be null")
     @ManyToOne(optional = false)
     @JoinColumn(name = "exercise_id", referencedColumnName = "id")
     private Exercise exercise;

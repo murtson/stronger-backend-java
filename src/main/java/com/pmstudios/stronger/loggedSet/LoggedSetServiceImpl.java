@@ -48,25 +48,53 @@ public class LoggedSetServiceImpl implements LoggedSetService {
 
     @Transactional
     @Override
-    public List<LoggedSet> addLoggedSet(Long loggedExerciseId, LoggedSet loggedSet) {
+    public List<LoggedSet> addLoggedSet(Long loggedExerciseId, LoggedSet toBeAddedLoggedSet) {
         LoggedExercise loggedExercise = loggedExerciseService.getLoggedExercise(loggedExerciseId);
         List<LoggedSet> previousLoggedSets = loggedExercise.getLoggedSets();
 
-        loggedSet.setLoggedExercise(loggedExercise);
+        toBeAddedLoggedSet.setLoggedExercise(loggedExercise);
 
-        updateExercisePrWhenLoggedSetIsAdded(loggedExercise, loggedSet);
+        updateExercisePrWhenLoggedSetIsAdded(loggedExercise, toBeAddedLoggedSet);
 
-        updateTopLoggedSetWhenLoggedSetIsAdded(loggedSet, previousLoggedSets);
+        updateTopLoggedSetWhenLoggedSetIsAdded(toBeAddedLoggedSet, previousLoggedSets);
 
-        save(loggedSet);
+        save(toBeAddedLoggedSet);
 
         List<LoggedSet> response = new ArrayList<>(previousLoggedSets);
-        response.add(loggedSet);
+        response.add(toBeAddedLoggedSet);
         return response;
 
     }
 
-    private void updateTopLoggedSetWhenLoggedSetIsAdded(LoggedSet loggedSetToBeAdded, List<LoggedSet> previousLoggedSets) {
+    public void updateExercisePrWhenLoggedSetIsAdded(LoggedExercise loggedExercise, LoggedSet toBeAddedLoggedSet) {
+
+        Long exerciseId = loggedExercise.getExercise().getId();
+        Long userId = loggedExercise.getWorkout().getUser().getId();
+        ExercisePr currentExercisePr = exercisePrService.getByRepsAndExerciseAndUserId(
+                toBeAddedLoggedSet.getReps(),
+                exerciseId,
+                userId
+        );
+
+        if(currentExercisePr == null) {
+            ExercisePr newExercisePr = ExercisePr.from(toBeAddedLoggedSet);
+            toBeAddedLoggedSet.setExercisePr(newExercisePr);
+            return;
+        }
+
+        Double currentEORM = currentExercisePr.getEstimatedOneRepMax();
+        Double requestEORM = toBeAddedLoggedSet.getEstimatedOneRepMax();
+        boolean isNotANewExercisePr = Double.compare(currentEORM, requestEORM) >= 0;
+
+        if(isNotANewExercisePr) return;
+
+        exercisePrService.deleteExercisePr(currentExercisePr);
+        ExercisePr newExercisePr = ExercisePr.from(toBeAddedLoggedSet);
+        toBeAddedLoggedSet.setExercisePr(newExercisePr);
+
+    }
+
+    public void updateTopLoggedSetWhenLoggedSetIsAdded(LoggedSet loggedSetToBeAdded, List<LoggedSet> previousLoggedSets) {
         boolean isNewTopSet = isNewTopLoggedSet(loggedSetToBeAdded, previousLoggedSets);
         if(!isNewTopSet) return;
 
@@ -79,33 +107,6 @@ public class LoggedSetServiceImpl implements LoggedSetService {
         loggedSetToBeAdded.setTopLoggedSet(true);
     }
 
-    private void updateExercisePrWhenLoggedSetIsAdded(LoggedExercise loggedExercise, LoggedSet loggedSet) {
-
-        Long exerciseId = loggedExercise.getExercise().getId();
-        Long userId = loggedExercise.getWorkout().getUser().getId();
-        ExercisePr currentExercisePr = exercisePrService.getByRepsAndExerciseAndUserId(
-                loggedSet.getReps(),
-                exerciseId,
-                userId
-        );
-
-        if(currentExercisePr == null) {
-            ExercisePr newExercisePr = ExercisePr.from(loggedSet);
-            loggedSet.setExercisePr(newExercisePr);
-            return;
-        }
-
-        Double currentEORM = currentExercisePr.getEstimatedOneRepMax();
-        Double requestEORM = loggedSet.getEstimatedOneRepMax();
-        boolean isNotANewExercisePr = Double.compare(currentEORM, requestEORM) >= 0;
-
-        if(isNotANewExercisePr) return;
-
-        exercisePrService.deleteExercisePr(currentExercisePr);
-        ExercisePr newExercisePr = ExercisePr.from(loggedSet);
-        loggedSet.setExercisePr(newExercisePr);
-
-    }
 
     @Transactional
     @Override
@@ -159,16 +160,19 @@ public class LoggedSetServiceImpl implements LoggedSetService {
         save(loggedSetToUpdate);
     }
 
-    private boolean isNewTopLoggedSet(LoggedSet newLoggedSet, List<LoggedSet> previousLoggedSets) {
+    public boolean isNewTopLoggedSet(LoggedSet newLoggedSet, List<LoggedSet> previousLoggedSets) {
         double previousTopSet = previousLoggedSets.stream()
                 .mapToDouble(LoggedSet::getEstimatedOneRepMax)
                 .max()
                 .orElse(Double.NEGATIVE_INFINITY);
 
         return previousTopSet < newLoggedSet.getEstimatedOneRepMax();
+
+
     }
 
-    private LoggedSet getLoggedSetWithHighestEORM(List<LoggedSet> loggedSets) {
+    // what happens if two exercises have the same EORM?
+    public LoggedSet getLoggedSetWithHighestEORM(List<LoggedSet> loggedSets) {
         return (loggedSets.isEmpty()) ? null : loggedSets
                 .stream()
                 .max(Comparator.comparing(LoggedSet::getEstimatedOneRepMax))

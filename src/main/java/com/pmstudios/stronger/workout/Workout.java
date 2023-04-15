@@ -29,6 +29,7 @@ public class Workout {
     private String name;
 
     // TODO: create validator for date
+    @NonNull
     @NotNull(message = "startDate must not be null")
     @Column(name = "start_date")
     private LocalDateTime startDate;
@@ -37,10 +38,12 @@ public class Workout {
     private LocalDateTime completeDate;
 
     // TODO: create validator for enum
+    @NonNull
     @NotNull(message = "workoutStatus must not be null")
     @Column(name = "status")
     private WorkoutStatus workoutStatus;
 
+    @NonNull
     @JsonIgnoreProperties(value = { "workouts" })
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id", referencedColumnName = "id")

@@ -14,6 +14,9 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Set;
+
 @Component
 public class LoadInitialData implements ApplicationRunner {
 
@@ -24,9 +27,18 @@ public class LoadInitialData implements ApplicationRunner {
     @Autowired
     UserRepository userRepository;
 
-    User testUser1 = new User("William", "Jonsson", "william@gmail.com", "test123");
-    User testUser2 = new User("Linus", "Ekelöf", "linus@gmail.com", "test123");
+    User testUser1 = new User(1L, "William", "Jonsson", "william@gmail.com", "test123", List.of(), List.of());
+    User testUser2 = new User(2L, "Linus", "Ekelöf", "linus@gmail.com", "test123", List.of(), List.of());
     User[] testUsers = { testUser1, testUser2 };
+
+    ExerciseCategory chestCategory = new ExerciseCategory(MuscleCategory.CHEST);
+    ExerciseCategory shoulderCategory = new ExerciseCategory(MuscleCategory.SHOULDERS);
+    ExerciseCategory tricepsCategory =   new ExerciseCategory(MuscleCategory.TRICEPS);
+    ExerciseCategory legsCategory =   new ExerciseCategory(MuscleCategory.LEGS);
+    ExerciseCategory backCategory =  new ExerciseCategory(MuscleCategory.BACK);
+    ExerciseCategory bicepsCategory =  new ExerciseCategory(MuscleCategory.BICEPS);
+    ExerciseCategory absCategory =    new ExerciseCategory(MuscleCategory.ABS);
+
 
     ExerciseCategory[] exerciseCategories = new ExerciseCategory[] {
             new ExerciseCategory(MuscleCategory.CHEST),
@@ -39,38 +51,38 @@ public class LoadInitialData implements ApplicationRunner {
     };
 
     Exercise[] chestExercises = new Exercise[] {
-            new Exercise("Flat Barbell Bench Press"),
-            new Exercise("Incline Dumbbell Bench Press")
+            new Exercise(1L, "Flat Barbell Bench Press", chestCategory, List.of(), Set.of()),
+            new Exercise(2L, "Incline Dumbbell Bench Press", chestCategory, List.of(), Set.of())
     };
 
     Exercise[] shoulderExercises = new Exercise[] {
-            new Exercise("Overhead Press"),
-            new Exercise("Lateral Raises")
+            new Exercise(3L, "Overhead Press", shoulderCategory, List.of(), Set.of()),
+            new Exercise(4L, "Lateral Raises", shoulderCategory, List.of(), Set.of())
     };
 
     Exercise[] tricepsExercises = new Exercise[] {
-            new Exercise("Barbell Skullcrushers"),
-            new Exercise("V-bar Pushdown")
+            new Exercise(5L, "Barbell Skullcrushers", tricepsCategory, List.of(), Set.of()),
+            new Exercise(6L, "V-bar Pushdown", tricepsCategory, List.of(), Set.of())
     };
 
     Exercise[] legExercises = new Exercise[] {
-            new Exercise("High-bar Barbell Squat"),
-            new Exercise("Leg Press Machine")
+            new Exercise(7L, "High-bar Barbell Squat", legsCategory, List.of(), Set.of()),
+            new Exercise(8L, "Leg Press Machine", legsCategory, List.of(), Set.of())
     };
 
     Exercise[] backExercises = new Exercise[] {
-            new Exercise("Barbell Row"),
-            new Exercise("Pull Ups")
+            new Exercise(9L, "Barbell Row", backCategory, List.of(), Set.of()),
+            new Exercise(10L, "Pull Ups", backCategory, List.of(), Set.of())
     };
 
     Exercise[] bicepExercises = new Exercise[] {
-            new Exercise("Dumbbell Hammer Curl"),
-            new Exercise("Ez-bar Curl")
+            new Exercise(11L, "Dumbbell Hammer Curl", bicepsCategory, List.of(), Set.of()),
+            new Exercise(12L, "Ez-bar Curl", bicepsCategory, List.of(), Set.of())
     };
 
     Exercise[] absExercises = new Exercise[] {
-            new Exercise("Crunches"),
-            new Exercise("Plank")
+            new Exercise(13L, "Crunches", absCategory, List.of(), Set.of()),
+            new Exercise(14L, "Plank", absCategory, List.of(), Set.of())
     };
     private final WorkoutRepository workoutRepository;
 

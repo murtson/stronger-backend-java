@@ -8,6 +8,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 @RequiredArgsConstructor
 @NoArgsConstructor
@@ -25,22 +26,28 @@ public class LoggedSet {
     private Long id;
 
     @NonNull
+    @NotNull(message = "weight cannot be null")
     @Column(name = "weight")
     private Double weight;
 
     @Min(value = 0L, message = "reps must be positive")
     @NonNull
+    @NotNull(message = "reps cannot be null")
     @Column(name = "reps")
     private Integer reps;
 
     @NonNull
+    @NotNull(message = "estimatedOneRepMax cannot be null")
     @Column(name = "estimated_one_rep_max")
     private Double estimatedOneRepMax;
 
     @NonNull
+    @NotNull(message = "isTopLoggedSet cannot be null")
     @Column(name = "is_top_logged_set")
     private boolean isTopLoggedSet;
 
+
+    @NotNull(message = "loggedExercise cannot be null")
     @JsonIgnore
     @ManyToOne(optional = false)
     @JoinColumn(name = "logged_exercise_id", referencedColumnName = "id")
