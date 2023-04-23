@@ -6,6 +6,7 @@ import com.pmstudios.stronger.exercisePr.ExercisePrService;
 import com.pmstudios.stronger.loggedExercise.LoggedExercise;
 import com.pmstudios.stronger.loggedExercise.LoggedExerciseService;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -98,11 +99,10 @@ public class LoggedSetServiceImpl implements LoggedSetService {
         boolean isNewTopSet = isNewTopLoggedSet(loggedSetToBeAdded, previousLoggedSets);
         if(!isNewTopSet) return;
 
-        LoggedSet previousTopSet = getLoggedSetWithHighestEORM(previousLoggedSets);
-        if(previousTopSet != null) {
+        getLoggedSetWithHighestEORM(previousLoggedSets).ifPresent(previousTopSet -> {
             previousTopSet.setTopLoggedSet(false);
             save(previousTopSet);
-        };
+        });
 
         loggedSetToBeAdded.setTopLoggedSet(true);
     }
@@ -140,24 +140,24 @@ public class LoggedSetServiceImpl implements LoggedSetService {
         return loggedSetsAfterDeletion;
     }
 
-    private void updateExercisePrWhenLoggedSetIsDeleted(Integer reps, Long exerciseId, Long userId) {
+    public void updateExercisePrWhenLoggedSetIsDeleted(Integer repsToEvaluate, Long exerciseId, Long userId) {
 
-        List<LoggedSet> historyLoggedSets = getByRepsAndExerciseAndUserId(reps, exerciseId, userId);
+        List<LoggedSet> historyLoggedSets = getByRepsAndExerciseAndUserId(repsToEvaluate, exerciseId, userId);
 
         if(historyLoggedSets.isEmpty()) return;
 
-        LoggedSet loggedSetToUpdate = getLoggedSetWithHighestEORM(historyLoggedSets);
+        LoggedSet loggedSetToUpdate = getLoggedSetWithHighestEORM(historyLoggedSets).get();
         ExercisePr newExercisePr = ExercisePr.from(loggedSetToUpdate);
 
         loggedSetToUpdate.setExercisePr(newExercisePr);
         save(loggedSetToUpdate);
     }
 
-    private void updateTopLoggedSetWhenLoggedSetIsDeleted(List<LoggedSet> loggedSets) {
-        if(loggedSets.isEmpty()) return;
-        LoggedSet loggedSetToUpdate = getLoggedSetWithHighestEORM(loggedSets);
-        loggedSetToUpdate.setTopLoggedSet(true);
-        save(loggedSetToUpdate);
+    public void updateTopLoggedSetWhenLoggedSetIsDeleted(List<LoggedSet> loggedSetsAfterDeletion) {
+        getLoggedSetWithHighestEORM(loggedSetsAfterDeletion).ifPresent(loggedSetToUpdate -> {
+            loggedSetToUpdate.setTopLoggedSet(true);
+            save(loggedSetToUpdate);
+        });
     }
 
     public boolean isNewTopLoggedSet(LoggedSet newLoggedSet, List<LoggedSet> previousLoggedSets) {
@@ -168,15 +168,12 @@ public class LoggedSetServiceImpl implements LoggedSetService {
 
         return previousTopSet < newLoggedSet.getEstimatedOneRepMax();
 
-
     }
 
     // what happens if two exercises have the same EORM?
-    public LoggedSet getLoggedSetWithHighestEORM(List<LoggedSet> loggedSets) {
-        return (loggedSets.isEmpty()) ? null : loggedSets
-                .stream()
-                .max(Comparator.comparing(LoggedSet::getEstimatedOneRepMax))
-                .get();
+    public Optional<LoggedSet> getLoggedSetWithHighestEORM(List<LoggedSet> loggedSets) {
+        return loggedSets.stream()
+                .max(Comparator.comparing(LoggedSet::getEstimatedOneRepMax));
     }
 
 }
