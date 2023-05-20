@@ -4,22 +4,24 @@ import com.pmstudios.stronger.loggedSet.dto.LoggedSetDto;
 import com.pmstudios.stronger.loggedSet.dto.LoggedSetMapper;
 import com.pmstudios.stronger.loggedSet.dto.LoggedSetUpdateDto;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@AllArgsConstructor
 @RestController
 @RequestMapping("/logged-set")
 public class LoggedSetController {
 
+    @Autowired
     LoggedSetService loggedSetService;
+    @Autowired
     LoggedSetMapper mapper;
 
     @PostMapping("/logged-exercise/{loggedExerciseId}")
-    ResponseEntity<List<LoggedSetDto>> createLoggedSet(
+    ResponseEntity<List<LoggedSetDto>> addLoggedSet(
             @PathVariable Long loggedExerciseId,
             @RequestBody LoggedSetUpdateDto request
     ) {

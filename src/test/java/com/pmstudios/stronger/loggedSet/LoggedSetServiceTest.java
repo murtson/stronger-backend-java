@@ -1,4 +1,4 @@
-package com.pmstudios.stronger.service;
+package com.pmstudios.stronger.loggedSet;
 
 import com.pmstudios.stronger.exercise.Exercise;
 import com.pmstudios.stronger.exerciseCategory.ExerciseCategory;
@@ -14,6 +14,7 @@ import com.pmstudios.stronger.user.User;
 import com.pmstudios.stronger.workout.Workout;
 import com.pmstudios.stronger.workout.WorkoutStatus;
 import org.junit.Before;
+// import org.junit.jupiter.api.Test; cannot use the new for some reason...
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
@@ -39,10 +40,15 @@ public class LoggedSetServiceTest {
     @InjectMocks
     private LoggedSetServiceImpl loggedSetServiceImpl;
 
-    private final User userMock = new User(1L, "Martin", "Mosesson", "martin.mosesson@mail.com", "pass123", List.of(), List.of());
+    private final User userMock = new User(
+            "Dazekorean",
+            "Martin",
+            "Mosesson",
+            "martin.mosesson@mail.com",
+            "pass123");
     private final ExerciseCategory chestCategory = new ExerciseCategory(MuscleCategory.CHEST);
-    private final Exercise benchPress = new Exercise(1L, "Flat Barbell Bench Press", chestCategory, List.of(), Set.of());
-    private final Workout workoutMock = new Workout(1L, "workout_name_1", LocalDateTime.now(), null, WorkoutStatus.IN_PROGRESS, userMock, List.of());
+    private final Exercise benchPress = new Exercise("Flat Barbell Bench Press", chestCategory);
+    private final Workout workoutMock = new Workout(LocalDateTime.now(), WorkoutStatus.IN_PROGRESS, userMock);
 
     private LoggedSet loggedSet1;
     private LoggedSet loggedSet2;
@@ -53,6 +59,9 @@ public class LoggedSetServiceTest {
 
     @Before
     public void setup() {
+        benchPress.setId(1L);
+        userMock.setId(1L);
+
         loggedExercise1 = new LoggedExercise(workoutMock, benchPress);
 
         // loggedSet1 usually used as request input

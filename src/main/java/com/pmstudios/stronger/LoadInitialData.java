@@ -3,19 +3,27 @@ package com.pmstudios.stronger;
 import com.pmstudios.stronger.exercise.Exercise;
 import com.pmstudios.stronger.exerciseCategory.ExerciseCategory;
 import com.pmstudios.stronger.exerciseCategory.MuscleCategory;
+import com.pmstudios.stronger.exercisePr.ExercisePr;
+import com.pmstudios.stronger.loggedExercise.LoggedExercise;
+import com.pmstudios.stronger.loggedSet.LoggedSet;
+import com.pmstudios.stronger.loggedSet.LoggedSetRepository;
 import com.pmstudios.stronger.user.User;
-import com.pmstudios.stronger.exception.EntityNotFoundException;
 import com.pmstudios.stronger.exerciseCategory.ExerciseCategoryRepository;
 import com.pmstudios.stronger.exercise.ExerciseRepository;
 import com.pmstudios.stronger.user.UserRepository;
+import com.pmstudios.stronger.userRole.UserRole;
+import com.pmstudios.stronger.userRole.UserRoleEnum;
+import com.pmstudios.stronger.userRole.UserRoleRepository;
+import com.pmstudios.stronger.workout.Workout;
 import com.pmstudios.stronger.workout.WorkoutRepository;
+import com.pmstudios.stronger.workout.WorkoutStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 @Component
 public class LoadInitialData implements ApplicationRunner {
@@ -26,136 +34,127 @@ public class LoadInitialData implements ApplicationRunner {
     ExerciseRepository exerciseRepository;
     @Autowired
     UserRepository userRepository;
-
-    User testUser1 = new User(1L, "William", "Jonsson", "william@gmail.com", "test123", List.of(), List.of());
-    User testUser2 = new User(2L, "Linus", "Ekelöf", "linus@gmail.com", "test123", List.of(), List.of());
-    User[] testUsers = { testUser1, testUser2 };
-
+    @Autowired
+    WorkoutRepository workoutRepository;
+    @Autowired
+    UserRoleRepository userRoleRepository;
+    User userWilliam = new User(
+            "Toney the foney",
+            "William",
+            "Jonsson",
+            "william@gmail.com",
+            "test123");
+    User userLinus = new User(
+            "Hermonie",
+            "Linus",
+            "Ekelöf",
+            "linus@gmail.com",
+            "test123");
+    User[] mockUsers = {userWilliam, userLinus};
     ExerciseCategory chestCategory = new ExerciseCategory(MuscleCategory.CHEST);
     ExerciseCategory shoulderCategory = new ExerciseCategory(MuscleCategory.SHOULDERS);
-    ExerciseCategory tricepsCategory =   new ExerciseCategory(MuscleCategory.TRICEPS);
-    ExerciseCategory legsCategory =   new ExerciseCategory(MuscleCategory.LEGS);
-    ExerciseCategory backCategory =  new ExerciseCategory(MuscleCategory.BACK);
-    ExerciseCategory bicepsCategory =  new ExerciseCategory(MuscleCategory.BICEPS);
-    ExerciseCategory absCategory =    new ExerciseCategory(MuscleCategory.ABS);
-
-
-    ExerciseCategory[] exerciseCategories = new ExerciseCategory[] {
-            new ExerciseCategory(MuscleCategory.CHEST),
-            new ExerciseCategory(MuscleCategory.SHOULDERS),
-            new ExerciseCategory(MuscleCategory.TRICEPS),
-            new ExerciseCategory(MuscleCategory.LEGS),
-            new ExerciseCategory(MuscleCategory.BACK),
-            new ExerciseCategory(MuscleCategory.BICEPS),
-            new ExerciseCategory(MuscleCategory.ABS),
+    ExerciseCategory tricepsCategory = new ExerciseCategory(MuscleCategory.TRICEPS);
+    ExerciseCategory legsCategory = new ExerciseCategory(MuscleCategory.LEGS);
+    ExerciseCategory backCategory = new ExerciseCategory(MuscleCategory.BACK);
+    ExerciseCategory bicepsCategory = new ExerciseCategory(MuscleCategory.BICEPS);
+    ExerciseCategory absCategory = new ExerciseCategory(MuscleCategory.ABS);
+    Exercise benchPress = new Exercise("Flat Barbell Bench Press", chestCategory);
+    List<Exercise> chestExercises = List.of(
+            benchPress,
+            new Exercise("Incline Dumbbell Bench Press", chestCategory)
+    );
+    Exercise squats = new Exercise("High-bar Barbell Squat", legsCategory);
+    List<Exercise> legExercises = List.of(
+            squats,
+            new Exercise("Leg Press Machine", legsCategory)
+    );
+    ExerciseCategory[] exerciseCategories = new ExerciseCategory[]{
+            chestCategory, shoulderCategory, tricepsCategory,
+            legsCategory, backCategory, bicepsCategory, absCategory,
     };
+    List<Exercise> shoulderExercises = List.of(
+            new Exercise("Overhead Press", shoulderCategory),
+            new Exercise("Lateral Raises", shoulderCategory)
+    );
 
-    Exercise[] chestExercises = new Exercise[] {
-            new Exercise(1L, "Flat Barbell Bench Press", chestCategory, List.of(), Set.of()),
-            new Exercise(2L, "Incline Dumbbell Bench Press", chestCategory, List.of(), Set.of())
-    };
-
-    Exercise[] shoulderExercises = new Exercise[] {
-            new Exercise(3L, "Overhead Press", shoulderCategory, List.of(), Set.of()),
-            new Exercise(4L, "Lateral Raises", shoulderCategory, List.of(), Set.of())
-    };
-
-    Exercise[] tricepsExercises = new Exercise[] {
-            new Exercise(5L, "Barbell Skullcrushers", tricepsCategory, List.of(), Set.of()),
-            new Exercise(6L, "V-bar Pushdown", tricepsCategory, List.of(), Set.of())
-    };
-
-    Exercise[] legExercises = new Exercise[] {
-            new Exercise(7L, "High-bar Barbell Squat", legsCategory, List.of(), Set.of()),
-            new Exercise(8L, "Leg Press Machine", legsCategory, List.of(), Set.of())
-    };
-
-    Exercise[] backExercises = new Exercise[] {
-            new Exercise(9L, "Barbell Row", backCategory, List.of(), Set.of()),
-            new Exercise(10L, "Pull Ups", backCategory, List.of(), Set.of())
-    };
-
-    Exercise[] bicepExercises = new Exercise[] {
-            new Exercise(11L, "Dumbbell Hammer Curl", bicepsCategory, List.of(), Set.of()),
-            new Exercise(12L, "Ez-bar Curl", bicepsCategory, List.of(), Set.of())
-    };
-
-    Exercise[] absExercises = new Exercise[] {
-            new Exercise(13L, "Crunches", absCategory, List.of(), Set.of()),
-            new Exercise(14L, "Plank", absCategory, List.of(), Set.of())
-    };
-    private final WorkoutRepository workoutRepository;
-
-    public LoadInitialData(WorkoutRepository workoutRepository) {
-        this.workoutRepository = workoutRepository;
-    }
-
+    List<Exercise> tricepsExercises = List.of(
+            new Exercise("Barbell Skullcrushers", tricepsCategory),
+            new Exercise("V-bar Pushdown", tricepsCategory)
+    );
+    List<Exercise> backExercises = List.of(
+            new Exercise("Barbell Row", backCategory),
+            new Exercise("Pull Ups", backCategory)
+    );
+    List<Exercise> bicepExercises = List.of(
+            new Exercise("Dumbbell Hammer Curl", bicepsCategory),
+            new Exercise("Ez-bar Curl", bicepsCategory)
+    );
+    List<Exercise> absExercises = List.of(
+            new Exercise("Crunches", absCategory),
+            new Exercise("Plank", absCategory)
+    );
+    LoggedSet loggedSet1 = new LoggedSet(125.0, 5, 140.1, false);
+    LoggedSet loggedSet2_william = new LoggedSet(100.0, 5, 112.5, true);
+    LoggedSet loggedSet3_william = new LoggedSet(75.0, 5, 83.4, false);
+    LoggedSet loggedSet4_william = new LoggedSet(50.0, 5, 56.2, false);
+    List<LoggedSet> mockLoggedSets = List.of(loggedSet2_william, loggedSet3_william, loggedSet4_william);
+    ExercisePr exercisePr1_william;
+    Workout workout1_william = new Workout(LocalDateTime.now(), WorkoutStatus.IN_PROGRESS, userWilliam);
+    LoggedExercise loggedExercise1_william = new LoggedExercise(workout1_william, benchPress);
+    Workout workout1_linus = new Workout(LocalDateTime.now(), WorkoutStatus.IN_PROGRESS, userLinus);
+    List<Workout> mockWorkouts = List.of(workout1_william, workout1_linus);
+    LoggedExercise loggedExercise1_linus = new LoggedExercise(workout1_linus, squats);
+    @Autowired
+    private LoggedSetRepository loggedSetRepository;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
 
-        // populate db with test users
-        for (User user : testUsers) userRepository.save(user);
+        UserRole USER = new UserRole(UserRoleEnum.USER.toString());
+        UserRole ADMIN = new UserRole(UserRoleEnum.ADMIN.toString());
+
+        userRoleRepository.save(USER);
+        userRoleRepository.save(ADMIN);
+
+//         prepare loggedSets
+
+        // set exercisePr
+//        exercisePr1_william = ExercisePr.from(loggedSet2_william);
+//        loggedSet2_william.setExercisePr(exercisePr1_william);
+        // prep loggedExercise
+//        loggedExercise1_william.setLoggedSets(List.of(loggedSet2_william, loggedSet3_william, loggedSet4_william));
+        // prep workout
+//        workout1_william.setLoggedExercises(List.of(loggedExercise1_william));
+        List<Workout> williamWorkouts = List.of(workout1_william);
+        // prep user
+
+
+        chestCategory.setExercises(chestExercises);
+        shoulderCategory.setExercises(shoulderExercises);
+        tricepsCategory.setExercises(tricepsExercises);
+        legsCategory.setExercises(legExercises);
+        backCategory.setExercises(backExercises);
+        bicepsCategory.setExercises(bicepExercises);
+        absCategory.setExercises(absExercises);
+
 
         // populate db with test categories
         for (ExerciseCategory exerciseCategory : exerciseCategories)
             exerciseCategoryRepository.save(exerciseCategory);
 
-        ExerciseCategory chestCategory = exerciseCategoryRepository.findById(1L)
-                .orElseThrow(() -> new EntityNotFoundException(1L, ExerciseCategory.class));
+        // populate db with test users
+        for (User user : mockUsers) userRepository.save(user);
 
-        ExerciseCategory shoulderCategory = exerciseCategoryRepository.findById(2L)
-                .orElseThrow(() -> new EntityNotFoundException(2L, ExerciseCategory.class));
+        workout1_william.setLoggedExercises(List.of(loggedExercise1_william));
+        workout1_linus.setLoggedExercises(List.of(loggedExercise1_linus));
+        // populate db with workouts
+        for (Workout workout : mockWorkouts) workoutRepository.save(workout);
 
-        ExerciseCategory tricepsCategory = exerciseCategoryRepository.findById(3L)
-                .orElseThrow(() -> new EntityNotFoundException(3L, ExerciseCategory.class));
+        loggedSet2_william.setLoggedExercise(loggedExercise1_william);
+        loggedSet3_william.setLoggedExercise(loggedExercise1_william);
 
-        ExerciseCategory legCategory = exerciseCategoryRepository.findById(4L)
-                .orElseThrow(() -> new EntityNotFoundException(4L, ExerciseCategory.class));
-
-        ExerciseCategory backCategory = exerciseCategoryRepository.findById(5L)
-                .orElseThrow(() -> new EntityNotFoundException(5L, ExerciseCategory.class));
-
-        ExerciseCategory bicepCategory = exerciseCategoryRepository.findById(6L)
-                .orElseThrow(() -> new EntityNotFoundException(6L, ExerciseCategory.class));
-
-        ExerciseCategory absCategory = exerciseCategoryRepository.findById(7L)
-                .orElseThrow(() -> new EntityNotFoundException(7L, ExerciseCategory.class));
-
-        for(Exercise exercise : chestExercises) {
-            exercise.setExerciseCategory(chestCategory);
-            exerciseRepository.save(exercise);
-        }
-
-        for(Exercise exercise : shoulderExercises) {
-            exercise.setExerciseCategory(shoulderCategory);
-            exerciseRepository.save(exercise);
-        }
-
-        for(Exercise exercise : tricepsExercises) {
-            exercise.setExerciseCategory(tricepsCategory);
-            exerciseRepository.save(exercise);
-        }
-
-        for(Exercise exercise : legExercises) {
-            exercise.setExerciseCategory(legCategory);
-            exerciseRepository.save(exercise);
-        }
-
-        for(Exercise exercise : backExercises) {
-            exercise.setExerciseCategory(backCategory);
-            exerciseRepository.save(exercise);
-        }
-
-        for(Exercise exercise : bicepExercises) {
-            exercise.setExerciseCategory(bicepCategory);
-            exerciseRepository.save(exercise);
-        }
-
-        for(Exercise exercise : absExercises) {
-            exercise.setExerciseCategory(absCategory);
-            exerciseRepository.save(exercise);
-        }
+        // populate db with loggedSets
+//        for(LoggedSet loggedSet : mockLoggedSets) loggedSetRepository.save(loggedSet);
 
     }
 }

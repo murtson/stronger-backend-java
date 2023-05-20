@@ -16,7 +16,8 @@ public class WorkoutMapper {
     LoggedExerciseMapper loggedExerciseMapper;
     public WorkoutDto entityToDto(Workout entity) {
 
-        List<LoggedExerciseDto> loggedExerciseDtos =  entity.getLoggedExercises() == null ||  entity.getLoggedExercises().isEmpty()? List.of() :entity.getLoggedExercises()
+        boolean noLoggedExercises = entity.getLoggedExercises() == null ||  entity.getLoggedExercises().isEmpty();
+        List<LoggedExerciseDto> loggedExerciseDtos = noLoggedExercises ? List.of() : entity.getLoggedExercises()
                 .stream()
                 .map(loggedExercise -> loggedExerciseMapper.entityToDto(loggedExercise))
                 .toList();

@@ -1,15 +1,12 @@
 package com.pmstudios.stronger.workout;
 
-import com.pmstudios.stronger.loggedExercise.LoggedExerciseService;
 import com.pmstudios.stronger.user.User;
 import com.pmstudios.stronger.exception.EntityNotFoundException;
 import com.pmstudios.stronger.user.UserService;
 import lombok.AllArgsConstructor;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -38,7 +35,7 @@ public class WorkoutServiceImpl implements WorkoutService {
     @Override
     public Workout createWorkout(Workout workout, Long userId) {
         checkValidWorkoutStatus(workout);
-        User user = userService.getUser(userId);
+        User user = userService.getUserById(userId);
         workout.setUser(user);
         return workoutRepository.save(workout);
     }
@@ -65,22 +62,22 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     @Override
     public List<Workout> getUserWorkoutsBetweenDates(LocalDateTime fromDate, LocalDateTime toDate, Long userId) {
-        if(fromDate.isAfter(toDate)) throw new DataIntegrityViolationException("fromDate must be before toDate");
+        if (fromDate.isAfter(toDate)) throw new DataIntegrityViolationException("fromDate must be before toDate");
         return workoutRepository.findAllByStartDateBetweenAndUserId(fromDate, toDate, userId);
     }
 
     private void checkValidWorkoutStatus(Workout workout) {
         // TODO: is this the right way to check for this? Or should this be done in validators or a constraint in the db?
-       LocalDateTime startDate = workout.getStartDate();
-       WorkoutStatus status = workout.getWorkoutStatus();
+        LocalDateTime startDate = workout.getStartDate();
+        WorkoutStatus status = workout.getWorkoutStatus();
 
-       if(startDate.isAfter(LocalDateTime.now()) && status != WorkoutStatus.PLANNED) {
-           throw new DataIntegrityViolationException("A scheduled workout needs to have 'PLANNED' status");
-       }
+        if (startDate.isAfter(LocalDateTime.now()) && status != WorkoutStatus.PLANNED) {
+            throw new DataIntegrityViolationException("A scheduled workout needs to have 'PLANNED' status");
+        }
 
-       if(status == WorkoutStatus.COMPLETED) {
-           throw new DataIntegrityViolationException("You cannot create a workout with 'COMPLETED' status");
-       }
+        if (status == WorkoutStatus.COMPLETED) {
+            throw new DataIntegrityViolationException("You cannot create a workout with 'COMPLETED' status");
+        }
 
     }
 

@@ -9,13 +9,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @SpringBootApplication
 public class StrongerApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(StrongerApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(StrongerApplication.class, args);
+    }
 
-	@Bean
-	public BCryptPasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
 
 }

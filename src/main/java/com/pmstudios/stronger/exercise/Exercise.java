@@ -13,7 +13,7 @@ import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.Set;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
@@ -27,8 +27,8 @@ public class Exercise {
     private Long id;
 
     // unique: there cannot be exercises with the same name
-    @NotBlank(message = "exercise name must not be blank")
     @NonNull
+    @NotBlank(message = "exercise name must not be blank")
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
