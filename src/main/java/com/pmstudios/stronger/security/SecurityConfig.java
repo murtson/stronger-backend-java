@@ -25,23 +25,23 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final UserServiceImpl userServiceImpl;
-    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomAuthenticationEntryPoint unauthorizedHandler;
     private final ExceptionHandlerFilter exceptionHandlerFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http.cors().and().csrf().disable()
-//                .exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint).and() // exceptionHandling is separate in security from the servlet
+                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests().antMatchers(SecurityConstants.REGISTER_PATH).permitAll() // white list auth paths
-                .antMatchers(SecurityConstants.LOGIN_PATH).permitAll() // white list auth paths
+                .authorizeRequests()
+                .antMatchers(SecurityConstants.REGISTER_PATH, SecurityConstants.LOGIN_PATH).permitAll() // white list auth paths
                 .anyRequest().authenticated(); // all requests should be authenticated, is this the authentication manager?
 
-        http.authenticationProvider(authenticationProvider());
+        http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // could add custom AuthenticationFilter
+        http.addFilterBefore(exceptionHandlerFilter, JwtAuthenticationFilter.class);
 
-        http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(exceptionHandlerFilter, JwtAuthenticationFilter.class);
+        http.authenticationProvider(authenticationProvider());
 
         return http.build();
     }

@@ -17,40 +17,51 @@ import com.pmstudios.stronger.userRole.UserRoleRepository;
 import com.pmstudios.stronger.workout.Workout;
 import com.pmstudios.stronger.workout.WorkoutRepository;
 import com.pmstudios.stronger.workout.WorkoutStatus;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Component
+@RequiredArgsConstructor
 public class LoadInitialData implements ApplicationRunner {
 
-    @Autowired
-    ExerciseCategoryRepository exerciseCategoryRepository;
-    @Autowired
-    ExerciseRepository exerciseRepository;
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    WorkoutRepository workoutRepository;
-    @Autowired
-    UserRoleRepository userRoleRepository;
+    private final ExerciseCategoryRepository exerciseCategoryRepository;
+    private final ExerciseRepository exerciseRepository;
+    private final UserRepository userRepository;
+    private final WorkoutRepository workoutRepository;
+    private final UserRoleRepository userRoleRepository;
+
+    private final LoggedSetRepository loggedSetRepository;
+
+    private final BCryptPasswordEncoder passwordEncoder;
+
     User userWilliam = new User(
             "Toney the foney",
             "William",
             "Jonsson",
-            "william@gmail.com",
-            "test123");
+            "william@gmail.com", "123");
+    Workout workout1_william = new Workout(LocalDateTime.now(), WorkoutStatus.IN_PROGRESS, userWilliam);
     User userLinus = new User(
             "Hermonie",
             "Linus",
             "Ekelöf",
             "linus@gmail.com",
-            "test123");
+            "123");
     User[] mockUsers = {userWilliam, userLinus};
+    Workout workout1_linus = new Workout(LocalDateTime.now(), WorkoutStatus.IN_PROGRESS, userLinus);
+    List<Workout> mockWorkouts = List.of(workout1_william, workout1_linus);
     ExerciseCategory chestCategory = new ExerciseCategory(MuscleCategory.CHEST);
     ExerciseCategory shoulderCategory = new ExerciseCategory(MuscleCategory.SHOULDERS);
     ExerciseCategory tricepsCategory = new ExerciseCategory(MuscleCategory.TRICEPS);
@@ -63,11 +74,13 @@ public class LoadInitialData implements ApplicationRunner {
             benchPress,
             new Exercise("Incline Dumbbell Bench Press", chestCategory)
     );
+    LoggedExercise loggedExercise1_william = new LoggedExercise(workout1_william, benchPress);
     Exercise squats = new Exercise("High-bar Barbell Squat", legsCategory);
     List<Exercise> legExercises = List.of(
             squats,
             new Exercise("Leg Press Machine", legsCategory)
     );
+    LoggedExercise loggedExercise1_linus = new LoggedExercise(workout1_linus, squats);
     ExerciseCategory[] exerciseCategories = new ExerciseCategory[]{
             chestCategory, shoulderCategory, tricepsCategory,
             legsCategory, backCategory, bicepsCategory, absCategory,
@@ -76,7 +89,6 @@ public class LoadInitialData implements ApplicationRunner {
             new Exercise("Overhead Press", shoulderCategory),
             new Exercise("Lateral Raises", shoulderCategory)
     );
-
     List<Exercise> tricepsExercises = List.of(
             new Exercise("Barbell Skullcrushers", tricepsCategory),
             new Exercise("V-bar Pushdown", tricepsCategory)
@@ -99,13 +111,6 @@ public class LoadInitialData implements ApplicationRunner {
     LoggedSet loggedSet4_william = new LoggedSet(50.0, 5, 56.2, false);
     List<LoggedSet> mockLoggedSets = List.of(loggedSet2_william, loggedSet3_william, loggedSet4_william);
     ExercisePr exercisePr1_william;
-    Workout workout1_william = new Workout(LocalDateTime.now(), WorkoutStatus.IN_PROGRESS, userWilliam);
-    LoggedExercise loggedExercise1_william = new LoggedExercise(workout1_william, benchPress);
-    Workout workout1_linus = new Workout(LocalDateTime.now(), WorkoutStatus.IN_PROGRESS, userLinus);
-    List<Workout> mockWorkouts = List.of(workout1_william, workout1_linus);
-    LoggedExercise loggedExercise1_linus = new LoggedExercise(workout1_linus, squats);
-    @Autowired
-    private LoggedSetRepository loggedSetRepository;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
@@ -143,7 +148,13 @@ public class LoadInitialData implements ApplicationRunner {
             exerciseCategoryRepository.save(exerciseCategory);
 
         // populate db with test users
-        for (User user : mockUsers) userRepository.save(user);
+        for (User user : mockUsers) {
+            UserRole adminRole = new UserRole(UserRoleEnum.ADMIN.toString());
+            user.setRoles(Collections.singletonList(adminRole));
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            userRepository.save(user);
+        }
+        ;
 
         workout1_william.setLoggedExercises(List.of(loggedExercise1_william));
         workout1_linus.setLoggedExercises(List.of(loggedExercise1_linus));

@@ -29,27 +29,28 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
         } catch (UsernameNotFoundException e) {
-            sendErrorResponse(HttpServletResponse.SC_NOT_FOUND, "Email does not exist in our records", response, request);
+            sendErrorResponse(HttpServletResponse.SC_NOT_FOUND, "The email provided in the JWT does not exist in our records", "Not Found", response, request);
         } catch (ExpiredJwtException e) {
-            sendErrorResponse(HttpServletResponse.SC_UNAUTHORIZED, "The JWT has expired", response, request);
+            sendErrorResponse(HttpServletResponse.SC_UNAUTHORIZED, "The JWT has expired", "Unauthorized", response, request);
         } catch (SignatureException e) {
-            sendErrorResponse(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT signature", response, request);
+            sendErrorResponse(HttpServletResponse.SC_UNAUTHORIZED, "The JWT signature is invalid", "Unauthorized", response, request);
         } catch (JwtException e) {
             System.out.println(e.getClass());
             System.out.println(e.getMessage());
-            sendErrorResponse(HttpServletResponse.SC_UNAUTHORIZED, "JWT EXCEPTION", response, request);
+            sendErrorResponse(HttpServletResponse.SC_UNAUTHORIZED, "JWT EXCEPTION", "Unauthorized", response, request);
         } catch (RuntimeException e) {
-            sendErrorResponse(HttpServletResponse.SC_BAD_REQUEST, "BAD REQUEST", response, request);
+            sendErrorResponse(HttpServletResponse.SC_BAD_REQUEST, "BAD REQUEST", "Bad Request", response, request);
         }
     }
 
-    private void sendErrorResponse(int statusCode, String message, HttpServletResponse response, HttpServletRequest request) throws IOException {
+    private void sendErrorResponse(int statusCode, String message, String error, HttpServletResponse response, HttpServletRequest request) throws IOException {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(statusCode);
 
         final Map<String, Object> body = new HashMap<>();
         body.put("status", statusCode);
-        body.put("error", message);
+        body.put("message", message);
+        body.put("error", error);
         body.put("path", request.getServletPath());
 
         final ObjectMapper mapper = new ObjectMapper();

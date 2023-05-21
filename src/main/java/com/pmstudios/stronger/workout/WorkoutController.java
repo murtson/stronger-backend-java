@@ -1,5 +1,6 @@
 package com.pmstudios.stronger.workout;
 
+import com.pmstudios.stronger.user.User;
 import com.pmstudios.stronger.workout.dto.WorkoutDto;
 import com.pmstudios.stronger.workout.dto.WorkoutMapper;
 import lombok.AllArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,8 +23,14 @@ public class WorkoutController {
     WorkoutMapper mapper;
 
     @GetMapping("/{id}")
-    ResponseEntity<WorkoutDto> getWorkout(@PathVariable Long id) {
+    ResponseEntity<WorkoutDto> getWorkout(@PathVariable Long id, Principal principal) {
+
+        User authUser = (User) principal;
+
         Workout workout = workoutService.getWorkout(id);
+
+        Long workoutUserId = workout.getUser().getId();
+
         WorkoutDto workoutDto = mapper.entityToDto(workout);
         return new ResponseEntity<>(workoutDto, HttpStatus.OK);
     }
@@ -53,7 +61,7 @@ public class WorkoutController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDate
     ) {
         List<Workout> userWorkouts;
-        if(fromDate == null || toDate == null) userWorkouts = workoutService.getUserWorkouts(userId);
+        if (fromDate == null || toDate == null) userWorkouts = workoutService.getUserWorkouts(userId);
         else userWorkouts = workoutService.getUserWorkoutsBetweenDates(fromDate, toDate, userId);
         return new ResponseEntity<>(userWorkouts, HttpStatus.OK);
     }
@@ -63,7 +71,6 @@ public class WorkoutController {
         List<Workout> workouts = workoutService.getWorkouts();
         return new ResponseEntity<>(workouts, HttpStatus.OK);
     }
-
 
 
 }
