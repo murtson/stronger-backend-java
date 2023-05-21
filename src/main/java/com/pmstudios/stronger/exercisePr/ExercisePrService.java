@@ -6,13 +6,16 @@ public interface ExercisePrService {
 
 //    void deleteExercisePR(Long Id);
 
-    void deleteExercisePr(ExercisePr exercisePr);
+    void delete(ExercisePr exercisePr);
 
-    void deleteExercisePrById(Long exercisePrId);
-    ExercisePr saveExercisePr(ExercisePr exercisePR);
+    void deleteById(Long exercisePrId);
+
+    ExercisePr save(ExercisePr exercisePR);
+
     ExercisePr getByRepsAndExerciseAndUserId(int reps, Long ExerciseId, Long userId);
-    List<ExercisePr> getSpecificExercisePrs(Long exerciseId, Long userId);
-    List<ExercisePr> getAllExercisePrs(Long userId);
-    ExercisePrDto toDto(ExercisePr exercisePR);
+
+    List<ExercisePr> getByExercise(Long exerciseId, Long userId);
+
+    List<ExercisePr> getAll(Long userId);
 
 }

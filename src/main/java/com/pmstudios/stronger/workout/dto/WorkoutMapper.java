@@ -1,10 +1,10 @@
 package com.pmstudios.stronger.workout.dto;
 
-import com.pmstudios.stronger.loggedExercise.dto.LoggedExerciseDto;
-import com.pmstudios.stronger.loggedExercise.dto.LoggedExerciseMapper;
+import com.pmstudios.stronger.loggedExercise.dto.LoggedExerciseResponse;
+import com.pmstudios.stronger.user.User;
 import com.pmstudios.stronger.workout.Workout;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,20 +12,9 @@ import java.util.List;
 @Component
 public class WorkoutMapper {
 
-    @Autowired
-    LoggedExerciseMapper loggedExerciseMapper;
-    public WorkoutDto entityToDto(Workout entity) {
-
-        boolean noLoggedExercises = entity.getLoggedExercises() == null ||  entity.getLoggedExercises().isEmpty();
-        List<LoggedExerciseDto> loggedExerciseDtos = noLoggedExercises ? List.of() : entity.getLoggedExercises()
-                .stream()
-                .map(loggedExercise -> loggedExerciseMapper.entityToDto(loggedExercise))
-                .toList();
-
-        return new WorkoutDto(entity.getId(), entity.getName(),
-                entity.getStartDate(), entity.getCompleteDate(),
-                entity.getWorkoutStatus(), entity.getUser().getId(),
-                loggedExerciseDtos);
+    public Workout createWorkoutRequestToEntity(CreateWorkoutRequest request, User user) {
+        // TODO: perhaps make check here to see if startDate is > Date.now, status must be planned.
+        return new Workout(request.getName(), request.getStartDate(), request.getWorkoutStatus(), user);
     }
 
 }

@@ -7,12 +7,9 @@ import com.pmstudios.stronger.exercisePr.ExercisePr;
 import com.pmstudios.stronger.exercisePr.ExercisePrService;
 import com.pmstudios.stronger.loggedExercise.LoggedExercise;
 import com.pmstudios.stronger.loggedExercise.LoggedExerciseService;
-import com.pmstudios.stronger.loggedSet.LoggedSet;
-import com.pmstudios.stronger.loggedSet.LoggedSetRepository;
-import com.pmstudios.stronger.loggedSet.LoggedSetServiceImpl;
 import com.pmstudios.stronger.user.User;
 import com.pmstudios.stronger.workout.Workout;
-import com.pmstudios.stronger.workout.WorkoutStatus;
+import com.pmstudios.stronger.workout.WorkoutStatusEnum;
 import org.junit.Before;
 // import org.junit.jupiter.api.Test; cannot use the new for some reason...
 import org.junit.Test;
@@ -31,15 +28,6 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class LoggedSetServiceTest {
 
-    @Mock
-    private LoggedSetRepository loggedSetRepository;
-    @Mock
-    private ExercisePrService exercisePrService;
-    @Mock
-    private LoggedExerciseService loggedExerciseService;
-    @InjectMocks
-    private LoggedSetServiceImpl loggedSetServiceImpl;
-
     private final User userMock = new User(
             "Dazekorean",
             "Martin",
@@ -48,8 +36,15 @@ public class LoggedSetServiceTest {
             "pass123");
     private final ExerciseCategory chestCategory = new ExerciseCategory(MuscleCategory.CHEST);
     private final Exercise benchPress = new Exercise("Flat Barbell Bench Press", chestCategory);
-    private final Workout workoutMock = new Workout(LocalDateTime.now(), WorkoutStatus.IN_PROGRESS, userMock);
-
+    private final Workout workoutMock = new Workout("Mock Workout", LocalDateTime.now(), WorkoutStatusEnum.IN_PROGRESS, userMock);
+    @Mock
+    private LoggedSetRepository loggedSetRepository;
+    @Mock
+    private ExercisePrService exercisePrService;
+    @Mock
+    private LoggedExerciseService loggedExerciseService;
+    @InjectMocks
+    private LoggedSetServiceImpl loggedSetServiceImpl;
     private LoggedSet loggedSet1;
     private LoggedSet loggedSet2;
     private LoggedSet loggedSet3;
@@ -98,10 +93,10 @@ public class LoggedSetServiceTest {
 
         when(loggedSetRepository.findById(loggedSetToBeRemoved.getId())).thenReturn(Optional.of(loggedSetToBeRemoved));
 
-        when(loggedExerciseService.getLoggedExercise(loggedSetToBeRemoved.getLoggedExercise().getId()))
+        when(loggedExerciseService.getById(loggedSetToBeRemoved.getLoggedExercise().getId()))
                 .thenReturn(loggedExerciseAfterDeletion);
 
-        List<LoggedSet> result = loggedSetServiceImpl.removeLoggedSet(loggedSetToBeRemoved.getId());
+        List<LoggedSet> result = loggedSetServiceImpl.remove(loggedSetToBeRemoved.getId());
 
         // loggedSet should get deleted
         verify(loggedSetRepository, times(1)).delete(loggedSetToBeRemoved);
@@ -134,12 +129,12 @@ public class LoggedSetServiceTest {
 
         when(loggedSetRepository.findById(loggedSetToBeRemoved.getId()))
                 .thenReturn(Optional.of((loggedSetToBeRemoved)));
-        when(loggedExerciseService.getLoggedExercise(loggedSetToBeRemoved.getLoggedExercise().getId()))
+        when(loggedExerciseService.getById(loggedSetToBeRemoved.getLoggedExercise().getId()))
                 .thenReturn(loggedExerciseAfterDeletion);
         when(loggedSetRepository.findByRepsAndLoggedExercise_Exercise_IdAndLoggedExercise_Workout_User_Id(repsToEvaluate, exerciseIdToEvaluate, userId))
                 .thenReturn(Arrays.asList(loggedSet2, loggedSet3));
 
-        List<LoggedSet> result = loggedSetServiceImpl.removeLoggedSet(loggedSetToBeRemoved.getId());
+        List<LoggedSet> result = loggedSetServiceImpl.remove(loggedSetToBeRemoved.getId());
 
         // loggedSet should get deleted
         verify(loggedSetRepository, times(1)).delete(loggedSetToBeRemoved);
@@ -162,7 +157,9 @@ public class LoggedSetServiceTest {
 
     @Test
     public void updateExercisePrWhenLoggedSetIsDeletedTest__withoutHistorySets() {
-        Integer repsToEvaluate = 5; Long exerciseId = 1L; Long userId = 1L;
+        Integer repsToEvaluate = 5;
+        Long exerciseId = 1L;
+        Long userId = 1L;
 
         List<LoggedSet> historyLoggedSets = List.of();
 
@@ -176,7 +173,9 @@ public class LoggedSetServiceTest {
 
     @Test
     public void updateExercisePrWhenLoggedSetIsDeletedTest__WithHistorySets() {
-        int repsToEvaluate = 5; Long exerciseId = 1L; Long userId = 1L;
+        int repsToEvaluate = 5;
+        Long exerciseId = 1L;
+        Long userId = 1L;
 
         LoggedSet toBeNextExercisePrSet = loggedSet1;
         toBeNextExercisePrSet.setLoggedExercise(loggedExercise1);
@@ -222,12 +221,12 @@ public class LoggedSetServiceTest {
         assertNull(toBeAddedLoggedSet.getLoggedExercise());
         assertFalse(toBeAddedLoggedSet.isTopLoggedSet());
 
-        when(loggedExerciseService.getLoggedExercise(mockId)).thenReturn(loggedExerciseMock);
+//        when(loggedExerciseService.getById(mockId)).thenReturn(loggedExerciseMock);
 
         when(exercisePrService.getByRepsAndExerciseAndUserId(toBeAddedLoggedSet.getReps(), exerciseId, userId))
                 .thenReturn(null);
 
-        List<LoggedSet> result = loggedSetServiceImpl.addLoggedSet(loggedExerciseMock.getId(), toBeAddedLoggedSet);
+        List<LoggedSet> result = loggedSetServiceImpl.addLoggedSet(loggedExerciseMock, toBeAddedLoggedSet);
 
         // assert that toBeAddedLoggedSet got the loggedExercise
         LoggedExercise resultLoggedExercise = toBeAddedLoggedSet.getLoggedExercise();
@@ -310,7 +309,7 @@ public class LoggedSetServiceTest {
 
         loggedSetServiceImpl.updateExercisePrWhenLoggedSetIsAdded(loggedExerciseSetWillBeAddedTo, toBeAddedLoggedSet);
 
-        verify(exercisePrService, times(1)).deleteExercisePr(exercisePr1);
+        verify(exercisePrService, times(1)).delete(exercisePr1);
 
         // assert that toBeAddedLoggedSet has been set as new exercisePr
         Double result = toBeAddedLoggedSet.getExercisePr().getEstimatedOneRepMax();

@@ -1,8 +1,11 @@
 package com.pmstudios.stronger.exercisePr;
 
+import com.pmstudios.stronger.exercisePr.dto.ExercisePrResponse;
+import com.pmstudios.stronger.user.User;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,35 +17,34 @@ public class ExercisePrController {
 
     ExercisePrService exercisePrService;
 
+    @GetMapping(value = "/all/me")
+    public ResponseEntity<List<ExercisePrResponse>> getUserExercisePrs(@AuthenticationPrincipal User authUser) {
+        List<ExercisePrResponse> response = exercisePrService.getAll(authUser.getId())
+                .stream().map(ExercisePrResponse::from).toList();
 
-    @GetMapping(value = "/user/{userId}/all")
-    public ResponseEntity<List<ExercisePrDto>> getAllExercisePRs(@PathVariable Long userId) {
-        List<ExercisePrDto> exercisePrs = exercisePrService.getAllExercisePrs(userId).stream()
-                .map(e -> exercisePrService.toDto(e)).toList();
-
-        return new ResponseEntity<>(exercisePrs, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/exercise/{exerciseId}/user/{userId}/all")
-    public ResponseEntity<List<ExercisePrDto>> getSpecificExercisePRs(@PathVariable Long exerciseId, @PathVariable Long userId) {
-        List<ExercisePrDto> exercisePRs = exercisePrService.getSpecificExercisePrs(exerciseId, userId).stream()
-                .map(e -> exercisePrService.toDto(e)).toList();
+    @GetMapping(value = "/exercise/{exerciseId}/me")
+    public ResponseEntity<List<ExercisePrResponse>> getSpecificExerciseUserPrs(
+            @PathVariable Long exerciseId, @AuthenticationPrincipal User authUser) {
+        List<ExercisePrResponse> response = exercisePrService.getByExercise(exerciseId, authUser.getId())
+                .stream().map(ExercisePrResponse::from).toList();
 
-        return new ResponseEntity<>(exercisePRs, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/exercise/{exerciseId}/user/{userId}")
-    public ResponseEntity<ExercisePrDto> getExercisesPR(@PathVariable Long exerciseId, @PathVariable Long userId, @RequestParam int reps) {
+    @GetMapping(value = "/exercise/{exerciseId}/reps/{reps}/me")
+    public ResponseEntity<ExercisePrResponse> getExercisePrByRepsAndExercise(@PathVariable Long exerciseId, @PathVariable Long userId, @RequestParam int reps) {
         ExercisePr exercisePR = exercisePrService.getByRepsAndExerciseAndUserId(reps, exerciseId, userId);
-        return new ResponseEntity<>(exercisePrService.toDto(exercisePR), HttpStatus.OK);
+        return new ResponseEntity<>(ExercisePrResponse.from(exercisePR), HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<HttpStatus> deleteById(@PathVariable Long id) {
-        exercisePrService.deleteExercisePrById(id);
+    public ResponseEntity<HttpStatus> deleteExercisePr(@PathVariable Long id) {
+        exercisePrService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
 
 
 }

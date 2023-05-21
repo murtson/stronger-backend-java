@@ -1,6 +1,5 @@
 package com.pmstudios.stronger.workout;
 
-import com.pmstudios.stronger.user.User;
 import com.pmstudios.stronger.exception.EntityNotFoundException;
 import com.pmstudios.stronger.user.UserService;
 import lombok.AllArgsConstructor;
@@ -18,25 +17,14 @@ public class WorkoutServiceImpl implements WorkoutService {
     UserService userService;
 
     @Override
-    public Workout getWorkout(Long id) {
-
+    public Workout getWorkoutById(Long id) {
         return workoutRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(id, Workout.class));
-
-        // remove empty LoggedSets
-//        workout.getLoggedExercises().forEach(loggedExercise -> {
-//            if(loggedExercise.getLoggedSets().isEmpty())
-//                loggedExerciseService.deleteLoggedExercise(loggedExercise.getId());
-//        });
-
-
     }
 
     @Override
-    public Workout createWorkout(Workout workout, Long userId) {
+    public Workout saveWorkout(Workout workout) {
         checkValidWorkoutStatus(workout);
-        User user = userService.getUserById(userId);
-        workout.setUser(user);
         return workoutRepository.save(workout);
     }
 
@@ -46,17 +34,17 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public void deleteWorkout(Long id) {
+    public void deleteWorkoutById(Long id) {
         workoutRepository.deleteById(id);
     }
 
     @Override
-    public List<Workout> getWorkouts() {
+    public List<Workout> getAllWorkouts() {
         return workoutRepository.findAll();
     }
 
     @Override
-    public List<Workout> getUserWorkouts(Long userId) {
+    public List<Workout> getWorkoutByUserId(Long userId) {
         return workoutRepository.findByUserId(userId);
     }
 
@@ -69,13 +57,13 @@ public class WorkoutServiceImpl implements WorkoutService {
     private void checkValidWorkoutStatus(Workout workout) {
         // TODO: is this the right way to check for this? Or should this be done in validators or a constraint in the db?
         LocalDateTime startDate = workout.getStartDate();
-        WorkoutStatus status = workout.getWorkoutStatus();
+        WorkoutStatusEnum status = workout.getWorkoutStatus();
 
-        if (startDate.isAfter(LocalDateTime.now()) && status != WorkoutStatus.PLANNED) {
+        if (startDate.isAfter(LocalDateTime.now()) && status != WorkoutStatusEnum.PLANNED) {
             throw new DataIntegrityViolationException("A scheduled workout needs to have 'PLANNED' status");
         }
 
-        if (status == WorkoutStatus.COMPLETED) {
+        if (status == WorkoutStatusEnum.COMPLETED) {
             throw new DataIntegrityViolationException("You cannot create a workout with 'COMPLETED' status");
         }
 

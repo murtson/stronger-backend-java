@@ -7,7 +7,6 @@ import com.pmstudios.stronger.user.User;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,6 +24,8 @@ public class Workout {
     @Column(name = "id")
     private Long id;
 
+    @NonNull
+    @NotNull(message = "Name is required")
     @Column(name = "name")
     private String name;
 
@@ -41,15 +42,15 @@ public class Workout {
     @NonNull
     @NotNull(message = "workoutStatus must not be null")
     @Column(name = "status")
-    private WorkoutStatus workoutStatus;
+    private WorkoutStatusEnum workoutStatus;
 
     @NonNull
-    @JsonIgnoreProperties(value = { "workouts" })
+    @JsonIgnoreProperties(value = {"workouts"})
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    @JsonIgnoreProperties(value = { "workout" })
+    @JsonIgnoreProperties(value = {"workout"})
     @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL)
     private List<LoggedExercise> loggedExercises;
 

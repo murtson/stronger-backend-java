@@ -1,9 +1,6 @@
 package com.pmstudios.stronger.loggedExercise;
 
 import com.pmstudios.stronger.exercise.Exercise;
-import com.pmstudios.stronger.loggedExercise.dto.LoggedExerciseDto;
-import com.pmstudios.stronger.loggedSet.dto.LoggedSetDto;
-import com.pmstudios.stronger.loggedSet.dto.LoggedSetMapper;
 import com.pmstudios.stronger.workout.Workout;
 import com.pmstudios.stronger.exception.EntityNotFoundException;
 import com.pmstudios.stronger.exercise.ExerciseService;
@@ -23,40 +20,42 @@ public class LoggedExerciseServiceImpl implements LoggedExerciseService {
     ExerciseService exerciseService;
 
     @Override
-    public LoggedExercise getLoggedExercise(Long id) {
-         return loggedExerciseRepository.findById(id)
+    public LoggedExercise getById(Long id) {
+        return loggedExerciseRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(id, LoggedExercise.class));
     }
 
     @Override
-    public LoggedExercise saveLoggedExercise(LoggedExercise loggedExercise, Long workoutId, Long exerciseId) {
-        Workout workout = workoutService.getWorkout(workoutId);
+    public LoggedExercise create(Workout workout, Long exerciseId) {
         Exercise exercise = exerciseService.getExercise(exerciseId);
-        loggedExercise.setWorkout(workout);
-        loggedExercise.setExercise(exercise);
+        LoggedExercise loggedExercise = new LoggedExercise(workout, exercise);
         return loggedExerciseRepository.save(loggedExercise);
     }
+
     @Override
     public LoggedExercise save(LoggedExercise loggedExercise) {
         return loggedExerciseRepository.save(loggedExercise);
     }
 
     @Override
-    public void deleteLoggedExercise(Long id) {
+    public void deleteById(Long id) {
         loggedExerciseRepository.deleteById(id);
     }
 
     @Override
-    public List<LoggedExercise> getLoggedExercisesByWorkoutId(Long workoutId) {
+    public void delete(LoggedExercise loggedExercise) {
+        loggedExerciseRepository.delete(loggedExercise);
+    }
+
+    @Override
+    public List<LoggedExercise> getByWorkoutId(Long workoutId) {
         return loggedExerciseRepository.findByWorkoutId(workoutId);
     }
 
     @Override
-    public List<LoggedExercise> getLoggedExercisesByExerciseIdAndUserId(Long exerciseId, Long userId) {
+    public List<LoggedExercise> getByExerciseIdAndUserId(Long exerciseId, Long userId) {
         return loggedExerciseRepository.findByExerciseIdAndWorkout_User_Id(exerciseId, userId);
     }
-
-
 
 
 }

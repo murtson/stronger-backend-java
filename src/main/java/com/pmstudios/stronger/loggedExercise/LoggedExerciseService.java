@@ -1,21 +1,23 @@
 package com.pmstudios.stronger.loggedExercise;
 
-import com.pmstudios.stronger.loggedExercise.dto.LoggedExerciseDto;
+import com.pmstudios.stronger.workout.Workout;
 
 import java.util.List;
 
 public interface LoggedExerciseService {
 
-    LoggedExercise getLoggedExercise(Long id);
+    LoggedExercise getById(Long id);
 
-    LoggedExercise saveLoggedExercise(LoggedExercise loggedExercise, Long workoutId, Long exerciseId);
+    LoggedExercise create(Workout workout, Long exerciseId);
 
     LoggedExercise save(LoggedExercise loggedExercise);
 
-    void deleteLoggedExercise(Long id);
+    void deleteById(Long id);
 
-    List<LoggedExercise> getLoggedExercisesByWorkoutId(Long workoutId);
+    void delete(LoggedExercise loggedExercise);
 
-    List<LoggedExercise> getLoggedExercisesByExerciseIdAndUserId(Long exerciseId, Long userId);
+    List<LoggedExercise> getByWorkoutId(Long workoutId);
+
+    List<LoggedExercise> getByExerciseIdAndUserId(Long exerciseId, Long userId);
 
 }

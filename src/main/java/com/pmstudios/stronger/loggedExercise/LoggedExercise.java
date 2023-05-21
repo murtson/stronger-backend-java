@@ -2,14 +2,12 @@ package com.pmstudios.stronger.loggedExercise;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.pmstudios.stronger.loggedSet.LoggedSet;
-import com.pmstudios.stronger.loggedSet.dto.LoggedSetDto;
 import com.pmstudios.stronger.workout.Workout;
 import com.pmstudios.stronger.exercise.Exercise;
 import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.util.List;
 
 @RequiredArgsConstructor

@@ -1,50 +1,78 @@
 package com.pmstudios.stronger.loggedSet;
 
-import com.pmstudios.stronger.loggedSet.dto.LoggedSetDto;
-import com.pmstudios.stronger.loggedSet.dto.LoggedSetMapper;
-import com.pmstudios.stronger.loggedSet.dto.LoggedSetUpdateDto;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.pmstudios.stronger.loggedExercise.LoggedExercise;
+import com.pmstudios.stronger.loggedExercise.LoggedExerciseService;
+import com.pmstudios.stronger.loggedSet.dto.LoggedSetResponse;
+import com.pmstudios.stronger.loggedSet.dto.AddLoggedSetRequest;
+import com.pmstudios.stronger.user.User;
+import com.pmstudios.stronger.user.dto.UserUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/logged-set")
+@RequiredArgsConstructor
 public class LoggedSetController {
 
-    @Autowired
-    LoggedSetService loggedSetService;
-    @Autowired
-    LoggedSetMapper mapper;
+    private final LoggedExerciseService loggedExerciseService;
+    private final LoggedSetService loggedSetService;
 
     @PostMapping("/logged-exercise/{loggedExerciseId}")
-    ResponseEntity<List<LoggedSetDto>> addLoggedSet(
+    ResponseEntity<?> addLoggedSet(
             @PathVariable Long loggedExerciseId,
-            @RequestBody LoggedSetUpdateDto request
+            @Valid @RequestBody AddLoggedSetRequest request,
+            @AuthenticationPrincipal User authUser
     ) {
-        LoggedSet loggedSet = mapper.dtoToEntity(request);
-        List<LoggedSet> savedLoggedSet = loggedSetService.addLoggedSet(loggedExerciseId, loggedSet);
-        List<LoggedSetDto> loggedSetDtos = savedLoggedSet.stream().map(set -> mapper.entityToDto(set)).toList();
-        return new ResponseEntity<>(loggedSetDtos, HttpStatus.CREATED);
+        LoggedExercise loggedExercise = loggedExerciseService.getById(loggedExerciseId);
+
+        if (!isModifyingOwnData(loggedExercise, authUser) && !UserUtils.isAdminUser(authUser)) {
+            String message = "You are not allowed to modify other user's workouts";
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(message);
+        }
+
+        LoggedSet loggedSet = LoggedSetService.from(request);
+        List<LoggedSet> updatedLoggedSets = loggedSetService.addLoggedSet(loggedExercise, loggedSet);
+
+        List<LoggedSetResponse> response = updatedLoggedSets.stream().map(LoggedSetResponse::from).toList();
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
 
     }
 
     @DeleteMapping("/{loggedSetId}")
-    ResponseEntity<List<LoggedSetDto>> deleteLoggedSet(@PathVariable Long loggedSetId) {
-        List<LoggedSet> savedLoggedSet = loggedSetService.removeLoggedSet(loggedSetId);
-        List<LoggedSetDto> loggedSetDtos = savedLoggedSet.stream().map(set -> mapper.entityToDto(set)).toList();
-        return new ResponseEntity<>(loggedSetDtos, HttpStatus.CREATED);
+    ResponseEntity<?> deleteLoggedSet(@PathVariable Long loggedSetId, @AuthenticationPrincipal User authUser) {
+        LoggedSet loggedSetToRemove = loggedSetService.getById(loggedSetId);
+
+        if (!isModifyingOwnData(loggedSetToRemove, authUser) && !UserUtils.isAdminUser(authUser)) {
+            String message = "You are not allowed to modify other user's workouts";
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(message);
+        }
+
+        List<LoggedSet> updatedLoggedSets = loggedSetService.remove(loggedSetToRemove);
+        List<LoggedSetResponse> loggedSetResponse = updatedLoggedSets.stream().map(LoggedSetResponse::from).toList();
+        return new ResponseEntity<>(loggedSetResponse, HttpStatus.CREATED);
 
     }
 
     @GetMapping("/exercise/{exerciseId}/reps/{repsAmount}")
-    ResponseEntity<List<LoggedSetDto>> getLoggedSetsByRepsAndExercise(@PathVariable int repsAmount, @PathVariable Long exerciseId) {
+    ResponseEntity<List<LoggedSetResponse>> getLoggedSetsByRepsAndExercise(@PathVariable int repsAmount, @PathVariable Long exerciseId) {
         List<LoggedSet> loggedSets = loggedSetService.getByRepsAndExerciseAndUserId(repsAmount, exerciseId, 1L);
-        List<LoggedSetDto> loggedSetsDto = loggedSets.stream().map(set -> mapper.entityToDto(set)).toList();
+        List<LoggedSetResponse> loggedSetsDto = loggedSets.stream().map(LoggedSetResponse::from).toList();
         return new ResponseEntity<>(loggedSetsDto, HttpStatus.OK);
+    }
+
+    private boolean isModifyingOwnData(LoggedSet loggedSet, User authUser) {
+        return Objects.equals(loggedSet.getLoggedExercise().getWorkout().getUser().getId(), authUser.getId());
+    }
+
+    private boolean isModifyingOwnData(LoggedExercise loggedExercise, User authUser) {
+        return Objects.equals(loggedExercise.getWorkout().getUser().getId(), authUser.getId());
     }
 
 }

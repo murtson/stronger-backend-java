@@ -1,12 +1,13 @@
 package com.pmstudios.stronger.loggedSet;
 
+import com.pmstudios.stronger.NumberUtility;
 import com.pmstudios.stronger.exception.EntityNotFoundException;
 import com.pmstudios.stronger.exercisePr.ExercisePr;
 import com.pmstudios.stronger.exercisePr.ExercisePrService;
 import com.pmstudios.stronger.loggedExercise.LoggedExercise;
 import com.pmstudios.stronger.loggedExercise.LoggedExerciseService;
+import com.pmstudios.stronger.loggedSet.dto.AddLoggedSetRequest;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -19,6 +20,7 @@ public class LoggedSetServiceImpl implements LoggedSetService {
     LoggedSetRepository loggedSetRepository;
     ExercisePrService exercisePrService;
     LoggedExerciseService loggedExerciseService;
+
 
     @Override
     public LoggedSet getById(Long id) {
@@ -49,8 +51,7 @@ public class LoggedSetServiceImpl implements LoggedSetService {
 
     @Transactional
     @Override
-    public List<LoggedSet> addLoggedSet(Long loggedExerciseId, LoggedSet toBeAddedLoggedSet) {
-        LoggedExercise loggedExercise = loggedExerciseService.getLoggedExercise(loggedExerciseId);
+    public List<LoggedSet> addLoggedSet(LoggedExercise loggedExercise, LoggedSet toBeAddedLoggedSet) {
         List<LoggedSet> previousLoggedSets = loggedExercise.getLoggedSets();
 
         toBeAddedLoggedSet.setLoggedExercise(loggedExercise);
@@ -77,7 +78,7 @@ public class LoggedSetServiceImpl implements LoggedSetService {
                 userId
         );
 
-        if(currentExercisePr == null) {
+        if (currentExercisePr == null) {
             ExercisePr newExercisePr = ExercisePr.from(toBeAddedLoggedSet);
             toBeAddedLoggedSet.setExercisePr(newExercisePr);
             return;
@@ -87,9 +88,9 @@ public class LoggedSetServiceImpl implements LoggedSetService {
         Double requestEORM = toBeAddedLoggedSet.getEstimatedOneRepMax();
         boolean isNotANewExercisePr = Double.compare(currentEORM, requestEORM) >= 0;
 
-        if(isNotANewExercisePr) return;
+        if (isNotANewExercisePr) return;
 
-        exercisePrService.deleteExercisePr(currentExercisePr);
+        exercisePrService.delete(currentExercisePr);
         ExercisePr newExercisePr = ExercisePr.from(toBeAddedLoggedSet);
         toBeAddedLoggedSet.setExercisePr(newExercisePr);
 
@@ -97,7 +98,7 @@ public class LoggedSetServiceImpl implements LoggedSetService {
 
     public void updateTopLoggedSetWhenLoggedSetIsAdded(LoggedSet loggedSetToBeAdded, List<LoggedSet> previousLoggedSets) {
         boolean isNewTopSet = isNewTopLoggedSet(loggedSetToBeAdded, previousLoggedSets);
-        if(!isNewTopSet) return;
+        if (!isNewTopSet) return;
 
         getLoggedSetWithHighestEORM(previousLoggedSets).ifPresent(previousTopSet -> {
             previousTopSet.setTopLoggedSet(false);
@@ -107,13 +108,9 @@ public class LoggedSetServiceImpl implements LoggedSetService {
         loggedSetToBeAdded.setTopLoggedSet(true);
     }
 
-
     @Transactional
     @Override
-    public List<LoggedSet> removeLoggedSet(Long loggedSetId) {
-
-        LoggedSet loggedSetToBeRemoved = getById(loggedSetId);
-
+    public List<LoggedSet> remove(LoggedSet loggedSetToBeRemoved) {
         Integer repsToEvaluate = loggedSetToBeRemoved.getReps();
         Long exerciseIdToEvaluate = loggedSetToBeRemoved.getLoggedExercise().getExercise().getId();
         Long userId = loggedSetToBeRemoved.getLoggedExercise().getWorkout().getUser().getId();
@@ -125,15 +122,13 @@ public class LoggedSetServiceImpl implements LoggedSetService {
 
         delete(loggedSetToBeRemoved);
 
-        List<LoggedSet> loggedSetsAfterDeletion = loggedExerciseService
-                .getLoggedExercise(loggedExerciseId)
-                .getLoggedSets();
+        List<LoggedSet> loggedSetsAfterDeletion = loggedExerciseService.getById(loggedExerciseId).getLoggedSets();
 
-        if(shouldUpdateExercisePr) {
+        if (shouldUpdateExercisePr) {
             updateExercisePrWhenLoggedSetIsDeleted(repsToEvaluate, exerciseIdToEvaluate, userId);
         }
 
-        if(shouldUpdateTopLoggedSet) {
+        if (shouldUpdateTopLoggedSet) {
             updateTopLoggedSetWhenLoggedSetIsDeleted(loggedSetsAfterDeletion);
         }
 
@@ -144,7 +139,7 @@ public class LoggedSetServiceImpl implements LoggedSetService {
 
         List<LoggedSet> historyLoggedSets = getByRepsAndExerciseAndUserId(repsToEvaluate, exerciseId, userId);
 
-        if(historyLoggedSets.isEmpty()) return;
+        if (historyLoggedSets.isEmpty()) return;
 
         LoggedSet loggedSetToUpdate = getLoggedSetWithHighestEORM(historyLoggedSets).get();
         ExercisePr newExercisePr = ExercisePr.from(loggedSetToUpdate);

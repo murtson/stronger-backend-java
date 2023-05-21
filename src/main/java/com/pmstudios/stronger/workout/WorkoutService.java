@@ -6,12 +6,18 @@ import java.util.List;
 
 public interface WorkoutService {
 
-    Workout getWorkout(Long id);
-    Workout createWorkout(Workout workout, Long userId);
+    Workout getWorkoutById(Long id);
+
+    Workout saveWorkout(Workout workout);
+
     Workout completeWorkout(Long id);
-    void deleteWorkout(Long id);
-    List<Workout> getWorkouts();
-    List<Workout> getUserWorkouts(Long userId);
+
+    void deleteWorkoutById(Long id);
+
+    List<Workout> getAllWorkouts();
+
+    List<Workout> getWorkoutByUserId(Long userId);
+
     List<Workout> getUserWorkoutsBetweenDates(LocalDateTime startDate, LocalDateTime endDate, Long userId);
 
 }

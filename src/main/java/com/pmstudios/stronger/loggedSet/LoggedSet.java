@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 @Entity
 @Table(name = "logged_set", uniqueConstraints = {
-        @UniqueConstraint(columnNames = { "logged_exercise_id", "is_top_logged_set" })
+        @UniqueConstraint(columnNames = {"logged_exercise_id", "is_top_logged_set"})
 })
 public class LoggedSet {
 
@@ -40,7 +40,6 @@ public class LoggedSet {
     @NotNull(message = "estimatedOneRepMax cannot be null")
     @Column(name = "estimated_one_rep_max")
     private Double estimatedOneRepMax;
-
     @NonNull
     @NotNull(message = "isTopLoggedSet cannot be null")
     @Column(name = "is_top_logged_set")
@@ -54,7 +53,7 @@ public class LoggedSet {
     private LoggedExercise loggedExercise;
 
     // TODO: perhaps have a join table instead (to remove NULL-values)
-    @JsonIgnoreProperties(value = { "loggedSet" })
+    @JsonIgnoreProperties(value = {"loggedSet"})
     @OneToOne(mappedBy = "loggedSet", cascade = CascadeType.ALL, orphanRemoval = true)
     private ExercisePr exercisePr;
 

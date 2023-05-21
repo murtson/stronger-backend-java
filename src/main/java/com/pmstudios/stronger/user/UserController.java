@@ -72,7 +72,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
         }
 
-        User user = UserUtils.registerRequestToEntity(registerRequest);
+        User user = RegisterRequest.toEntity(registerRequest);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         UserRole role = userRoleRepository.findByName(UserRoleEnum.USER.toString()).orElseThrow(NoSuchElementException::new);

@@ -16,22 +16,16 @@ import com.pmstudios.stronger.userRole.UserRoleEnum;
 import com.pmstudios.stronger.userRole.UserRoleRepository;
 import com.pmstudios.stronger.workout.Workout;
 import com.pmstudios.stronger.workout.WorkoutRepository;
-import com.pmstudios.stronger.workout.WorkoutStatus;
-import lombok.AllArgsConstructor;
+import com.pmstudios.stronger.workout.WorkoutStatusEnum;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Component
 @RequiredArgsConstructor
@@ -52,7 +46,7 @@ public class LoadInitialData implements ApplicationRunner {
             "William",
             "Jonsson",
             "william@gmail.com", "123");
-    Workout workout1_william = new Workout(LocalDateTime.now(), WorkoutStatus.IN_PROGRESS, userWilliam);
+    Workout workout1_william = new Workout("William workout", LocalDateTime.now(), WorkoutStatusEnum.IN_PROGRESS, userWilliam);
     User userLinus = new User(
             "Hermonie",
             "Linus",
@@ -60,7 +54,7 @@ public class LoadInitialData implements ApplicationRunner {
             "linus@gmail.com",
             "123");
     User[] mockUsers = {userWilliam, userLinus};
-    Workout workout1_linus = new Workout(LocalDateTime.now(), WorkoutStatus.IN_PROGRESS, userLinus);
+    Workout workout1_linus = new Workout("Linus workout", LocalDateTime.now(), WorkoutStatusEnum.IN_PROGRESS, userLinus);
     List<Workout> mockWorkouts = List.of(workout1_william, workout1_linus);
     ExerciseCategory chestCategory = new ExerciseCategory(MuscleCategory.CHEST);
     ExerciseCategory shoulderCategory = new ExerciseCategory(MuscleCategory.SHOULDERS);
