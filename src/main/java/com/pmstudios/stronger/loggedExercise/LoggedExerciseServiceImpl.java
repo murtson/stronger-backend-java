@@ -14,7 +14,6 @@ import java.util.List;
 @Service
 public class LoggedExerciseServiceImpl implements LoggedExerciseService {
 
-    LoggedSetMapper loggedSetMapper;
     LoggedExerciseRepository loggedExerciseRepository;
     WorkoutService workoutService;
     ExerciseService exerciseService;

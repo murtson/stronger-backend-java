@@ -15,7 +15,7 @@ public class ExercisePrServiceImpl implements ExercisePrService {
     ExercisePrRepository exercisePrRepository;
 
     @Override
-    public void delete(ExercisePr exercisePr) {
+    public void deleteByExercisePr(ExercisePr exercisePr) {
         LoggedSet loggedSet = exercisePr.getLoggedSet();
         loggedSet.setExercisePr(null);
         exercisePrRepository.delete(exercisePr);

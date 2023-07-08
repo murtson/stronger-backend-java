@@ -34,8 +34,8 @@ public class ExercisePrController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/exercise/{exerciseId}/reps/{reps}/me")
-    public ResponseEntity<ExercisePrResponse> getExercisePrByRepsAndExercise(@PathVariable Long exerciseId, @PathVariable Long userId, @RequestParam int reps) {
+    @GetMapping(value = "/exercise/{exerciseId}/reps/{reps}")
+    public ResponseEntity<ExercisePrResponse> getExercisePrByRepsAndExercise(@PathVariable Long exerciseId, @PathVariable int reps, @PathVariable Long userId) {
         ExercisePr exercisePR = exercisePrService.getByRepsAndExerciseAndUserId(reps, exerciseId, userId);
         return new ResponseEntity<>(ExercisePrResponse.from(exercisePR), HttpStatus.OK);
     }

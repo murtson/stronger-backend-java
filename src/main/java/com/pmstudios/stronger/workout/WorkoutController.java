@@ -1,16 +1,16 @@
 package com.pmstudios.stronger.workout;
 
+import com.pmstudios.stronger.loggedExercise.LoggedExercise;
+import com.pmstudios.stronger.loggedSet.LoggedSet;
 import com.pmstudios.stronger.user.User;
 import com.pmstudios.stronger.user.UserService;
 import com.pmstudios.stronger.user.dto.UserUtils;
 import com.pmstudios.stronger.workout.dto.CreateWorkoutRequest;
 import com.pmstudios.stronger.workout.dto.WorkoutResponse;
-import com.pmstudios.stronger.workout.dto.WorkoutMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +27,6 @@ public class WorkoutController {
 
     UserService userService;
     WorkoutService workoutService;
-    WorkoutMapper mapper;
 
     @GetMapping("/{workoutId}")
     ResponseEntity<WorkoutResponse> getWorkout(@PathVariable Long workoutId) {
@@ -41,7 +40,7 @@ public class WorkoutController {
             @Validated @RequestBody @Valid CreateWorkoutRequest request, @AuthenticationPrincipal User authUser) {
         User user = userService.getUserById(authUser.getId());
 
-        Workout workout = mapper.createWorkoutRequestToEntity(request, user);
+        Workout workout = CreateWorkoutRequest.toEntity(request, user);
         Workout createdWorkout = workoutService.saveWorkout(workout);
         WorkoutResponse createdWorkoutResponse = WorkoutResponse.from(createdWorkout);
 
@@ -52,7 +51,7 @@ public class WorkoutController {
     ResponseEntity<?> deleteWorkout(@PathVariable Long workoutId, @AuthenticationPrincipal User authUser) {
         Workout workoutToBeDeleted = workoutService.getWorkoutById(workoutId);
 
-        if (!Objects.equals(workoutToBeDeleted.getUser().getId(), authUser.getId()) && !UserUtils.isAdminUser(authUser)) {
+        if (!isModifyingOwnData(workoutToBeDeleted, authUser) && !UserUtils.isAdminUser(authUser)) {
             String message = "You are not allowed to delete other user's workouts";
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(message);
         }
@@ -62,9 +61,16 @@ public class WorkoutController {
         return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 
-    @PostMapping("/{id}")
-    ResponseEntity<Workout> completeWorkout(@PathVariable Long id) {
-        Workout completedWorkout = workoutService.completeWorkout(id);
+    @PostMapping("/{workoutId}")
+    ResponseEntity<?> completeWorkout(@PathVariable Long workoutId, @AuthenticationPrincipal User authUser) {
+        Workout workoutToComplete = workoutService.getWorkoutById(workoutId);
+
+        if (!isModifyingOwnData(workoutToComplete, authUser) && !UserUtils.isAdminUser(authUser)) {
+            String message = "You cannot complete someone else's workouts";
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(message);
+        }
+
+        Workout completedWorkout = workoutService.completeWorkout(workoutId);
         return new ResponseEntity<>(completedWorkout, HttpStatus.OK);
     }
 
@@ -87,6 +93,10 @@ public class WorkoutController {
     ResponseEntity<List<Workout>> getWorkouts() {
         List<Workout> workouts = workoutService.getAllWorkouts();
         return new ResponseEntity<>(workouts, HttpStatus.OK);
+    }
+
+    private boolean isModifyingOwnData(Workout workout, User authUser) {
+        return Objects.equals(workout.getUser().getId(), authUser.getId());
     }
 
 

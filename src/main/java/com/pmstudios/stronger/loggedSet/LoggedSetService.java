@@ -33,6 +33,6 @@ public interface LoggedSetService {
 
     List<LoggedSet> addLoggedSet(LoggedExercise loggedExercise, LoggedSet loggedSet);
 
-    List<LoggedSet> remove(LoggedSet loggedSet);
+    List<LoggedSet> removeLoggedSet(LoggedSet loggedSet);
 
 }

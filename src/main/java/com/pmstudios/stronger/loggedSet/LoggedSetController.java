@@ -42,7 +42,6 @@ public class LoggedSetController {
 
         List<LoggedSetResponse> response = updatedLoggedSets.stream().map(LoggedSetResponse::from).toList();
         return new ResponseEntity<>(response, HttpStatus.CREATED);
-
     }
 
     @DeleteMapping("/{loggedSetId}")
@@ -54,10 +53,9 @@ public class LoggedSetController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(message);
         }
 
-        List<LoggedSet> updatedLoggedSets = loggedSetService.remove(loggedSetToRemove);
+        List<LoggedSet> updatedLoggedSets = loggedSetService.removeLoggedSet(loggedSetToRemove);
         List<LoggedSetResponse> loggedSetResponse = updatedLoggedSets.stream().map(LoggedSetResponse::from).toList();
         return new ResponseEntity<>(loggedSetResponse, HttpStatus.CREATED);
-
     }
 
     @GetMapping("/exercise/{exerciseId}/reps/{repsAmount}")

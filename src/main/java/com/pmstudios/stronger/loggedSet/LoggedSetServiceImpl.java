@@ -1,13 +1,12 @@
 package com.pmstudios.stronger.loggedSet;
 
-import com.pmstudios.stronger.NumberUtility;
 import com.pmstudios.stronger.exception.EntityNotFoundException;
 import com.pmstudios.stronger.exercisePr.ExercisePr;
 import com.pmstudios.stronger.exercisePr.ExercisePrService;
 import com.pmstudios.stronger.loggedExercise.LoggedExercise;
 import com.pmstudios.stronger.loggedExercise.LoggedExerciseService;
-import com.pmstudios.stronger.loggedSet.dto.AddLoggedSetRequest;
 import lombok.AllArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -68,15 +67,12 @@ public class LoggedSetServiceImpl implements LoggedSetService {
 
     }
 
-    public void updateExercisePrWhenLoggedSetIsAdded(LoggedExercise loggedExercise, LoggedSet toBeAddedLoggedSet) {
+    public void updateExercisePrWhenLoggedSetIsAdded(@NotNull LoggedExercise loggedExercise, LoggedSet toBeAddedLoggedSet) {
 
         Long exerciseId = loggedExercise.getExercise().getId();
         Long userId = loggedExercise.getWorkout().getUser().getId();
         ExercisePr currentExercisePr = exercisePrService.getByRepsAndExerciseAndUserId(
-                toBeAddedLoggedSet.getReps(),
-                exerciseId,
-                userId
-        );
+                toBeAddedLoggedSet.getReps(), exerciseId, userId);
 
         if (currentExercisePr == null) {
             ExercisePr newExercisePr = ExercisePr.from(toBeAddedLoggedSet);
@@ -90,7 +86,7 @@ public class LoggedSetServiceImpl implements LoggedSetService {
 
         if (isNotANewExercisePr) return;
 
-        exercisePrService.delete(currentExercisePr);
+        exercisePrService.deleteByExercisePr(currentExercisePr);
         ExercisePr newExercisePr = ExercisePr.from(toBeAddedLoggedSet);
         toBeAddedLoggedSet.setExercisePr(newExercisePr);
 
@@ -110,7 +106,7 @@ public class LoggedSetServiceImpl implements LoggedSetService {
 
     @Transactional
     @Override
-    public List<LoggedSet> remove(LoggedSet loggedSetToBeRemoved) {
+    public List<LoggedSet> removeLoggedSet(LoggedSet loggedSetToBeRemoved) {
         Integer repsToEvaluate = loggedSetToBeRemoved.getReps();
         Long exerciseIdToEvaluate = loggedSetToBeRemoved.getLoggedExercise().getExercise().getId();
         Long userId = loggedSetToBeRemoved.getLoggedExercise().getWorkout().getUser().getId();

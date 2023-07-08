@@ -26,7 +26,6 @@ public class ExerciseCategoryController {
         return new ResponseEntity<>(category, HttpStatus.OK);
     }
 
-
     @PostMapping()
     ResponseEntity<ExerciseCategory> saveExerciseCategory(@Valid @RequestBody ExerciseCategory exerciseCategory) {
         ExerciseCategory category = exerciseCategoryService.saveExerciseCategory(exerciseCategory);

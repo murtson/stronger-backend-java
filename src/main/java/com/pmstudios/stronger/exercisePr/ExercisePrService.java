@@ -6,7 +6,7 @@ public interface ExercisePrService {
 
 //    void deleteExercisePR(Long Id);
 
-    void delete(ExercisePr exercisePr);
+    void deleteByExercisePr(ExercisePr exercisePr);
 
     void deleteById(Long exercisePrId);
 

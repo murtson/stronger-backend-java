@@ -91,12 +91,12 @@ public class LoggedSetServiceTest {
         LoggedExercise loggedExerciseAfterDeletion = new LoggedExercise(workoutMock, benchPress);
         loggedExerciseAfterDeletion.setLoggedSets(Arrays.asList(loggedSet3, loggedSet4));
 
-        when(loggedSetRepository.findById(loggedSetToBeRemoved.getId())).thenReturn(Optional.of(loggedSetToBeRemoved));
+//        when(loggedSetRepository.findById(loggedSetToBeRemoved.getId())).thenReturn(Optional.of(loggedSetToBeRemoved));
 
         when(loggedExerciseService.getById(loggedSetToBeRemoved.getLoggedExercise().getId()))
                 .thenReturn(loggedExerciseAfterDeletion);
 
-        List<LoggedSet> result = loggedSetServiceImpl.remove(loggedSetToBeRemoved.getId());
+        List<LoggedSet> result = loggedSetServiceImpl.removeLoggedSet(loggedSetToBeRemoved);
 
         // loggedSet should get deleted
         verify(loggedSetRepository, times(1)).delete(loggedSetToBeRemoved);
@@ -127,14 +127,14 @@ public class LoggedSetServiceTest {
 
         assertNull(toBeNextExercisePrSet.getExercisePr());
 
-        when(loggedSetRepository.findById(loggedSetToBeRemoved.getId()))
-                .thenReturn(Optional.of((loggedSetToBeRemoved)));
+//        when(loggedSetRepository.findById(loggedSetToBeRemoved.getId()))
+//                .thenReturn(Optional.of((loggedSetToBeRemoved)));
         when(loggedExerciseService.getById(loggedSetToBeRemoved.getLoggedExercise().getId()))
                 .thenReturn(loggedExerciseAfterDeletion);
         when(loggedSetRepository.findByRepsAndLoggedExercise_Exercise_IdAndLoggedExercise_Workout_User_Id(repsToEvaluate, exerciseIdToEvaluate, userId))
                 .thenReturn(Arrays.asList(loggedSet2, loggedSet3));
 
-        List<LoggedSet> result = loggedSetServiceImpl.remove(loggedSetToBeRemoved.getId());
+        List<LoggedSet> result = loggedSetServiceImpl.removeLoggedSet(loggedSetToBeRemoved);
 
         // loggedSet should get deleted
         verify(loggedSetRepository, times(1)).delete(loggedSetToBeRemoved);
@@ -309,7 +309,7 @@ public class LoggedSetServiceTest {
 
         loggedSetServiceImpl.updateExercisePrWhenLoggedSetIsAdded(loggedExerciseSetWillBeAddedTo, toBeAddedLoggedSet);
 
-        verify(exercisePrService, times(1)).delete(exercisePr1);
+        verify(exercisePrService, times(1)).deleteByExercisePr(exercisePr1);
 
         // assert that toBeAddedLoggedSet has been set as new exercisePr
         Double result = toBeAddedLoggedSet.getExercisePr().getEstimatedOneRepMax();
