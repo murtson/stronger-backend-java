@@ -2,7 +2,7 @@ package com.pmstudios.stronger.loggedExercise;
 
 import com.pmstudios.stronger.loggedExercise.dto.LoggedExerciseResponse;
 import com.pmstudios.stronger.user.User;
-import com.pmstudios.stronger.user.dto.UserUtils;
+import com.pmstudios.stronger.auth.dto.UserUtils;
 import com.pmstudios.stronger.workout.Workout;
 import com.pmstudios.stronger.workout.WorkoutService;
 import lombok.RequiredArgsConstructor;

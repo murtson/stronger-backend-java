@@ -5,7 +5,7 @@ import com.pmstudios.stronger.loggedExercise.LoggedExerciseService;
 import com.pmstudios.stronger.loggedSet.dto.LoggedSetResponse;
 import com.pmstudios.stronger.loggedSet.dto.AddLoggedSetRequest;
 import com.pmstudios.stronger.user.User;
-import com.pmstudios.stronger.user.dto.UserUtils;
+import com.pmstudios.stronger.auth.dto.UserUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -4,7 +4,7 @@ import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pmstudios.stronger.security.SecurityConstants;
 import com.pmstudios.stronger.security.manager.CustomAuthenticationManager;
-import com.pmstudios.stronger.user.dto.LoginRequest;
+import com.pmstudios.stronger.auth.dto.LoginRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -56,13 +56,13 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         String jwtToken = JWT.create()
                 .withSubject(authResult.getName())
                 .withExpiresAt(new Date(System.currentTimeMillis() + SecurityConstants.TOKEN_EXPIRATION_TIME))
-                .sign(SecurityConstants.hashAlgorithm);
+                .sign(SecurityConstants.accessTokenHashAlgorithm);
 
         response.addHeader(SecurityConstants.AUTHORIZATION, SecurityConstants.BEARER + jwtToken);
         // Basic Auth:
         // Header: Authorization: Basic Username:Password
 
-        // Token-based Auth:
-        // Header: Authorization: Bearer JWT-Token
+        // RefreshToken-based Auth:
+        // Header: Authorization: Bearer JWT-RefreshToken
     }
 }

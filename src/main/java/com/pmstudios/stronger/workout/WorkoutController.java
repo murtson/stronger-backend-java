@@ -1,10 +1,8 @@
 package com.pmstudios.stronger.workout;
 
-import com.pmstudios.stronger.loggedExercise.LoggedExercise;
-import com.pmstudios.stronger.loggedSet.LoggedSet;
 import com.pmstudios.stronger.user.User;
 import com.pmstudios.stronger.user.UserService;
-import com.pmstudios.stronger.user.dto.UserUtils;
+import com.pmstudios.stronger.auth.dto.UserUtils;
 import com.pmstudios.stronger.workout.dto.CreateWorkoutRequest;
 import com.pmstudios.stronger.workout.dto.WorkoutResponse;
 import lombok.AllArgsConstructor;
@@ -71,7 +69,7 @@ public class WorkoutController {
         }
 
         Workout completedWorkout = workoutService.completeWorkout(workoutId);
-        return new ResponseEntity<>(completedWorkout, HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body(completedWorkout);
     }
 
     @GetMapping("/user/all")

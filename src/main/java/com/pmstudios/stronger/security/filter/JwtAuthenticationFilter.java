@@ -1,14 +1,12 @@
 package com.pmstudios.stronger.security.filter;
 
-import com.pmstudios.stronger.security.JwtService;
+import com.pmstudios.stronger.token.JwtService;
 import com.pmstudios.stronger.security.SecurityConstants;
 import com.pmstudios.stronger.user.User;
-import com.pmstudios.stronger.user.UserService;
 import com.pmstudios.stronger.user.UserServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -33,7 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
 
 
-        String authHeader = request.getHeader("Authorization"); // Bearer Token
+        String authHeader = request.getHeader("Authorization"); // Bearer RefreshToken
 
         boolean noTokenInHeader = authHeader == null || !authHeader.startsWith(SecurityConstants.BEARER);
         if (noTokenInHeader) { // no token in header, send to next filter which is AuthenticationFilter
@@ -41,13 +39,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        String jwtToken = authHeader.replace(SecurityConstants.BEARER, "");
-        String userEmail = jwtService.extractUsername(jwtToken);
+        String accessToken = authHeader.replace(SecurityConstants.BEARER, "");
+        String userEmail = jwtService.getUsernameFromAccessToken(accessToken);
 
         boolean userNotAuthenticated = userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null;
         if (userNotAuthenticated) {
             User user = userService.loadUserByUsername(userEmail);
-            if (jwtService.isTokenValid(jwtToken, user)) {
+            if (jwtService.isAccessTokenValid(accessToken, user)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         user,
                         null,
@@ -56,7 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             } else {
-                System.out.println("Token for: " + userEmail + " was not valid");
+                System.out.println("RefreshToken for: " + userEmail + " was not valid");
             }
         }
 

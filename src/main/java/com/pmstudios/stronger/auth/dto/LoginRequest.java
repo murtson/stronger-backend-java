@@ -1,4 +1,4 @@
-package com.pmstudios.stronger.user.dto;
+package com.pmstudios.stronger.auth.dto;
 
 import lombok.*;
 

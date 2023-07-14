@@ -3,6 +3,7 @@ package com.pmstudios.stronger.user;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.pmstudios.stronger.exercisePr.ExercisePr;
+import com.pmstudios.stronger.token.RefreshToken;
 import com.pmstudios.stronger.userRole.UserRole;
 import com.pmstudios.stronger.workout.Workout;
 import lombok.*;
@@ -10,7 +11,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.management.relation.Role;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
@@ -57,7 +57,6 @@ public class User implements UserDetails {
     @Column(name = "password", nullable = false)
     private String password;
 
-
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
@@ -70,6 +69,10 @@ public class User implements UserDetails {
     @JsonIgnoreProperties(value = {"user"})
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<ExercisePr> exercisePersonalRecords;
+
+    @JsonIgnoreProperties(value = {"user"})
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<RefreshToken> refreshTokens;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
