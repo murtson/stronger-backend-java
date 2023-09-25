@@ -1,5 +1,6 @@
 package com.pmstudios.stronger.security;
 
+import com.pmstudios.stronger.security.filter.CustomAuthenticationFilter;
 import com.pmstudios.stronger.security.filter.ExceptionHandlerFilter;
 import com.pmstudios.stronger.security.filter.JwtAuthenticationFilter;
 import com.pmstudios.stronger.user.UserServiceImpl;
@@ -34,6 +35,7 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint unauthorizedHandler;
     private final ExceptionHandlerFilter exceptionHandlerFilter;
 
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -41,7 +43,7 @@ public class SecurityConfig {
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
-                .antMatchers(SecurityConstants.REGISTER_PATH, SecurityConstants.LOGIN_PATH).permitAll() // white list auth paths
+                .antMatchers(SecurityConstants.REGISTER_PATH, SecurityConstants.LOGIN_PATH, SecurityConstants.REFRESH_TOKEN_PATH).permitAll() // white list auth paths
                 .anyRequest().authenticated(); // all requests should be authenticated, is this the authentication manager?
 
         http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // could add custom AuthenticationFilter
@@ -77,9 +79,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://127.0.0.1:5173")); // Replace with the origin of your frontend application
+        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // Replace with the origin of your frontend application
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE")); // Specify the HTTP methods allowed
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type")); // Specify the headers allowed
+        configuration.setAllowCredentials(true); // allow browser to send cookies
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

@@ -3,6 +3,7 @@ package com.pmstudios.stronger.security.filter;
 import com.pmstudios.stronger.token.JwtService;
 import com.pmstudios.stronger.security.SecurityConstants;
 import com.pmstudios.stronger.user.User;
+import com.pmstudios.stronger.user.UserService;
 import com.pmstudios.stronger.user.UserServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,7 +24,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
 
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
 
     @Override
@@ -34,7 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization"); // Bearer RefreshToken
 
         boolean noTokenInHeader = authHeader == null || !authHeader.startsWith(SecurityConstants.BEARER);
-        if (noTokenInHeader) { // no token in header, send to next filter which is AuthenticationFilter
+        if (noTokenInHeader) { // no token in header, send to next filter which is AuthenticationFilter (UsernamePasswordAuthenticationFilter)
             filterChain.doFilter(request, response);
             return;
         }
@@ -44,21 +45,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         boolean userNotAuthenticated = userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null;
         if (userNotAuthenticated) {
-            User user = userService.loadUserByUsername(userEmail);
+            User user = (User) userService.loadUserByUsername(userEmail);
             if (jwtService.isAccessTokenValid(accessToken, user)) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        user,
-                        null,
-                        user.getAuthorities()
-                );
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             } else {
-                System.out.println("RefreshToken for: " + userEmail + " was not valid");
+                System.out.println("Token for: " + userEmail + " was not valid");
             }
         }
 
-        filterChain.doFilter(request, response);
+        filterChain.doFilter(request, response); // next filter, which is AuthenticationFilter (UsernamePasswordAuthenticationFilter)
 
 //        String user = JWT.require(SecurityConstants.hashAlgorithm)
 //                .build()

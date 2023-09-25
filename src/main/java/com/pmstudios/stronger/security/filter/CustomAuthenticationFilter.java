@@ -10,6 +10,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -21,12 +22,11 @@ import java.util.Date;
 @AllArgsConstructor
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
+
     private CustomAuthenticationManager authenticationManager;
 
     @Override
-    public Authentication attemptAuthentication(
-            HttpServletRequest request,
-            HttpServletResponse response
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response
     ) throws AuthenticationException {
 
         try {
@@ -53,12 +53,12 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
             FilterChain chain,
             Authentication authResult) throws IOException, ServletException {
 
-        String jwtToken = JWT.create()
-                .withSubject(authResult.getName())
-                .withExpiresAt(new Date(System.currentTimeMillis() + SecurityConstants.TOKEN_EXPIRATION_TIME))
-                .sign(SecurityConstants.accessTokenHashAlgorithm);
+//        String jwtToken = JWT.create()
+//                .withSubject(authResult.getName())
+//                .withExpiresAt(new Date(System.currentTimeMillis() + SecurityConstants.TOKEN_EXPIRATION_TIME))
+//                .sign(SecurityConstants.accessTokenHashAlgorithm);
 
-        response.addHeader(SecurityConstants.AUTHORIZATION, SecurityConstants.BEARER + jwtToken);
+//        response.addHeader(SecurityConstants.AUTHORIZATION, SecurityConstants.BEARER + jwtToken);
         // Basic Auth:
         // Header: Authorization: Basic Username:Password
 

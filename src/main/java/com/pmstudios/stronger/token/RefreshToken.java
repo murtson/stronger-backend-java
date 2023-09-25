@@ -14,9 +14,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class RefreshToken {
 
-    // a user can log in on many devices
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    // a user can only be logged in at one device
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     public User user;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

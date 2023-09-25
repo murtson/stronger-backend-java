@@ -45,7 +45,7 @@ public class LoadInitialData implements ApplicationRunner {
             "Toney the foney",
             "William",
             "Jonsson",
-            "william@gmail.com", "123");
+            "test@test.com", "test123");
     Workout workout1_william = new Workout("William workout", LocalDateTime.now(), WorkoutStatusEnum.IN_PROGRESS, userWilliam);
     User userLinus = new User(
             "Hermonie",

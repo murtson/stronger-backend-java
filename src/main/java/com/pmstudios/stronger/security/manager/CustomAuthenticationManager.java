@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 //@Component
 @AllArgsConstructor
+@Component
 public class CustomAuthenticationManager implements AuthenticationManager {
 
     private UserService userService;

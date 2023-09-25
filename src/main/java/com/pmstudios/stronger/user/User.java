@@ -71,8 +71,8 @@ public class User implements UserDetails {
     private List<ExercisePr> exercisePersonalRecords;
 
     @JsonIgnoreProperties(value = {"user"})
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<RefreshToken> refreshTokens;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private RefreshToken refreshToken;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
