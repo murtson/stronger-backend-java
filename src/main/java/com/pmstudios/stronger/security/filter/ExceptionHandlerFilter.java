@@ -7,6 +7,7 @@ import com.pmstudios.stronger.exception.ErrorResponse;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.security.SignatureException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,6 +26,9 @@ import java.util.Map;
 // we need an exceptionHandler for filters, since they supposedly are getting called before serverDispatchlet?
 @Component
 public class ExceptionHandlerFilter extends OncePerRequestFilter {
+
+    @Autowired
+    private ObjectMapper objectMapper; // Inject the custom ObjectMapper
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -58,13 +62,14 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
 //        body.put("messages", message);
 //        body.put("path", request.getServletPath());
 //        body.put("timestamp", )
+
         ErrorResponse errorResponse = new ErrorResponse(Collections.singletonList(message));
 
-        final ObjectMapper mapper = new ObjectMapper();
-        mapper.writeValue(response.getOutputStream(), errorResponse);
+        // Serialize the ErrorResponse object to JSON and write it to the response output stream
+        String jsonResponse = objectMapper.writeValueAsString(errorResponse);
 
-//        response.getWriter().write(message);
-//        response.getWriter().flush();
+        response.getWriter().write(jsonResponse);
+        response.getWriter().flush();
     }
 
 }

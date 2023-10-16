@@ -1,5 +1,6 @@
 package com.pmstudios.stronger.workout;
 
+import com.pmstudios.stronger.exception.EntityNotFoundException;
 import com.pmstudios.stronger.user.User;
 import com.pmstudios.stronger.user.UserService;
 import com.pmstudios.stronger.auth.dto.UserUtils;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
@@ -32,6 +34,16 @@ public class WorkoutController {
         WorkoutResponse workoutResponse = WorkoutResponse.from(workout);
         return new ResponseEntity<>(workoutResponse, HttpStatus.OK);
     }
+
+    @GetMapping("/date/{date}")
+    ResponseEntity<WorkoutResponse> getWorkoutByDate(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date) {
+        System.out.println("IN HERE BITCH");
+        System.out.println(date);
+//        Workout workout = workoutService.getWorkoutById(workoutId);
+//        WorkoutResponse workoutResponse = WorkoutResponse.from(workout);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
     @PostMapping("/create")
     ResponseEntity<WorkoutResponse> createWorkout(

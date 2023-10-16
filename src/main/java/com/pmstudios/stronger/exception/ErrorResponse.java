@@ -13,7 +13,7 @@ public class ErrorResponse {
 
     // without JsonFormat, we would get "2022-11-17T12:53:05.2617804"
     // now we get 2022-11-17 12:53:05 instead
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-mm-dd hh:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timestamp;
     private List<String> messages;
 

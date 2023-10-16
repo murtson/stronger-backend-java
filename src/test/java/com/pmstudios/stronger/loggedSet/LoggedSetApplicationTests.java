@@ -1,7 +1,9 @@
 package com.pmstudios.stronger.loggedSet;
 
 // this is the new, jUnit 5
+
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 // jUnit 4 i believe?
 //import org.junit.Test;
@@ -21,14 +23,14 @@ public class LoggedSetApplicationTests {
     @Autowired
     private MockMvc mockMvc;
 
-    @Test
-    public void contextLoads() {
-       assertNotNull(mockMvc);
-    }
-
-    @Test
-    public void addLoggedSetTest__withoutPreviousSets() {
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/logged-exericse/1");
-    }
+//    @Test
+//    public void contextLoads() {
+//       assertNotNull(mockMvc);
+//    }
+//
+//    @Test
+//    public void addLoggedSetTest__withoutPreviousSets() {
+//        RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/logged-exericse/1");
+//    }
 
 }

@@ -1,5 +1,6 @@
 package com.pmstudios.stronger;
 
+import com.fasterxml.jackson.databind.exc.InvalidDefinitionException;
 import com.pmstudios.stronger.exception.*;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -51,6 +52,11 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(InvalidDefinitionException.class)
+    public ResponseEntity<Object> handleWrongDateFormats(RuntimeException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 
     @Override // This method handle invalid field arguments for requests
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
