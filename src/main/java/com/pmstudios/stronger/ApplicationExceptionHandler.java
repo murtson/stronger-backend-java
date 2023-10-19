@@ -25,7 +25,7 @@ import java.util.List;
 @ControllerAdvice
 public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(EntityNotFoundException.class)
+    @ExceptionHandler({EntityNotFoundException.class, WorkoutNotFoundException.class})
     public ResponseEntity<Object> handleResourceNotFoundException(RuntimeException ex) {
         ErrorResponse errorResponse = new ErrorResponse(Collections.singletonList(ex.getMessage()));
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
@@ -54,6 +54,12 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
 
     @ExceptionHandler(InvalidDefinitionException.class)
     public ResponseEntity<Object> handleWrongDateFormats(RuntimeException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Object> handleAlLErrors(RuntimeException ex) {
         ErrorResponse errorResponse = new ErrorResponse(Collections.singletonList(ex.getMessage()));
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }

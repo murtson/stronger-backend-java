@@ -1,7 +1,9 @@
 package com.pmstudios.stronger.workout;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 
 public interface WorkoutService {
@@ -16,8 +18,10 @@ public interface WorkoutService {
 
     List<Workout> getAllWorkouts();
 
-    List<Workout> getWorkoutByUserId(Long userId);
+    List<Workout> getWorkoutsByUserId(Long userId);
 
     List<Workout> getUserWorkoutsBetweenDates(LocalDateTime startDate, LocalDateTime endDate, Long userId);
+
+    Optional<Workout> getWorkoutByDateAndUserId(LocalDate date, Long userId);
 
 }

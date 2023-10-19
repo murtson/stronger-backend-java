@@ -1,13 +1,16 @@
 package com.pmstudios.stronger.workout;
 
 import com.pmstudios.stronger.exception.EntityNotFoundException;
+import com.pmstudios.stronger.exception.WorkoutNotFoundException;
 import com.pmstudios.stronger.user.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Service
@@ -44,7 +47,7 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public List<Workout> getWorkoutByUserId(Long userId) {
+    public List<Workout> getWorkoutsByUserId(Long userId) {
         return workoutRepository.findByUserId(userId);
     }
 
@@ -52,6 +55,12 @@ public class WorkoutServiceImpl implements WorkoutService {
     public List<Workout> getUserWorkoutsBetweenDates(LocalDateTime fromDate, LocalDateTime toDate, Long userId) {
         if (fromDate.isAfter(toDate)) throw new DataIntegrityViolationException("fromDate must be before toDate");
         return workoutRepository.findAllByStartDateBetweenAndUserId(fromDate, toDate, userId);
+    }
+
+    @Override
+    public Optional<Workout> getWorkoutByDateAndUserId(LocalDate date, Long userId) {
+        LocalDateTime dateTime = date.atStartOfDay();
+        return workoutRepository.findByStartDateAndUserId(dateTime, userId);
     }
 
     private void checkValidWorkoutStatus(Workout workout) {

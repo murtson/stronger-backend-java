@@ -16,9 +16,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
@@ -36,18 +38,21 @@ public class WorkoutController {
     }
 
     @GetMapping("/date/{date}")
-    ResponseEntity<WorkoutResponse> getWorkoutByDate(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date) {
-        System.out.println("IN HERE BITCH");
-        System.out.println(date);
-//        Workout workout = workoutService.getWorkoutById(workoutId);
-//        WorkoutResponse workoutResponse = WorkoutResponse.from(workout);
-        return new ResponseEntity<>(HttpStatus.OK);
+    ResponseEntity<WorkoutResponse> getWorkoutByDate(
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @AuthenticationPrincipal User authUser) {
+
+        Optional<Workout> workoutOptional = workoutService.getWorkoutByDateAndUserId(date, authUser.getId());
+
+        return workoutOptional.map(workout -> ResponseEntity.ok().body(WorkoutResponse.from(workout)))
+                .orElseGet(() -> ResponseEntity.noContent().build());
     }
 
 
     @PostMapping("/create")
     ResponseEntity<WorkoutResponse> createWorkout(
-            @Validated @RequestBody @Valid CreateWorkoutRequest request, @AuthenticationPrincipal User authUser) {
+            @Validated @RequestBody @Valid CreateWorkoutRequest request,
+            @AuthenticationPrincipal User authUser) {
         User user = userService.getUserById(authUser.getId());
 
         Workout workout = CreateWorkoutRequest.toEntity(request, user);
@@ -92,7 +97,7 @@ public class WorkoutController {
     ) {
         List<Workout> userWorkouts;
         if (fromDate == null || toDate == null) {
-            userWorkouts = workoutService.getWorkoutByUserId(authUser.getId());
+            userWorkouts = workoutService.getWorkoutsByUserId(authUser.getId());
         } else {
             userWorkouts = workoutService.getUserWorkoutsBetweenDates(fromDate, toDate, authUser.getId());
         }

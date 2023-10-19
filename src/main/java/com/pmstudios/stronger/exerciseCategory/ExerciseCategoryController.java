@@ -16,6 +16,7 @@ public class ExerciseCategoryController {
 
     @GetMapping("/all")
     ResponseEntity<List<ExerciseCategory>> getExerciseCategories() {
+        System.out.println("sending all");
         List<ExerciseCategory> categories = exerciseCategoryService.getExerciseCategories();
         return new ResponseEntity<>(categories, HttpStatus.OK);
     }
