@@ -5,7 +5,9 @@ import com.pmstudios.stronger.loggedExercise.LoggedExercise;
 import com.pmstudios.stronger.loggedSet.dto.LoggedSetResponse;
 import lombok.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 
 @Data
@@ -21,17 +23,18 @@ public class LoggedExerciseResponse {
 
     private Exercise exercise;
 
-    private Long workoutId;
-
-    private Long userId;
-
     public static LoggedExerciseResponse from(LoggedExercise loggedExercise) {
+
+        List<LoggedSetResponse> loggedSetResponses = Optional.ofNullable(loggedExercise.getLoggedSets())
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(LoggedSetResponse::from)
+                .toList();
+
         return LoggedExerciseResponse.builder()
                 .loggedExerciseId(loggedExercise.getId())
                 .exercise(loggedExercise.getExercise())
-                .workoutId(loggedExercise.getWorkout().getId())
-                .userId(loggedExercise.getWorkout().getUser().getId())
-                .loggedSets(loggedExercise.getLoggedSets().stream().map(LoggedSetResponse::from).toList())
+                .loggedSets(loggedSetResponses)
                 .build();
 
     }

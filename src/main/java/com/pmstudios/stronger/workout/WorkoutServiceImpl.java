@@ -1,7 +1,7 @@
 package com.pmstudios.stronger.workout;
 
+import com.pmstudios.stronger.exception.BadRequestException;
 import com.pmstudios.stronger.exception.EntityNotFoundException;
-import com.pmstudios.stronger.exception.WorkoutNotFoundException;
 import com.pmstudios.stronger.user.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 
 @AllArgsConstructor
 @Service
@@ -58,9 +58,17 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public Optional<Workout> getWorkoutByDateAndUserId(LocalDate date, Long userId) {
-        LocalDateTime dateTime = date.atStartOfDay();
-        return workoutRepository.findByStartDateAndUserId(dateTime, userId);
+    public List<Workout> getWorkoutByDateAndUserId(LocalDate date, Long userId) {
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+        return workoutRepository.findAllByStartDateBetweenAndUserId(startOfDay, endOfDay, userId);
+    }
+
+    @Override
+    public Workout createWorkout(Workout workout, LocalDateTime startDateTime, Long userId) {
+        checkDuplicateWorkouts(startDateTime.toLocalDate(), userId);
+        checkValidWorkoutStatus(workout);
+        return workoutRepository.save(workout);
     }
 
     private void checkValidWorkoutStatus(Workout workout) {
@@ -75,7 +83,14 @@ public class WorkoutServiceImpl implements WorkoutService {
         if (status == WorkoutStatusEnum.COMPLETED) {
             throw new DataIntegrityViolationException("You cannot create a workout with 'COMPLETED' status");
         }
+    }
 
+    private void checkDuplicateWorkouts(LocalDate startDate, Long userId) {
+        // Checking to see if there already is a workout for this date
+        List<Workout> workouts = this.getWorkoutByDateAndUserId(startDate, userId);
+        if (!workouts.isEmpty()) {
+            throw new BadRequestException("You already have a workout for this date");
+        }
     }
 
 }

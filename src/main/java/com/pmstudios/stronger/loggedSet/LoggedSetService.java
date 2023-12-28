@@ -1,6 +1,6 @@
 package com.pmstudios.stronger.loggedSet;
 
-import com.pmstudios.stronger.NumberUtility;
+import com.pmstudios.stronger.utilities.NumberUtility;
 import com.pmstudios.stronger.loggedExercise.LoggedExercise;
 import com.pmstudios.stronger.loggedSet.dto.AddLoggedSetRequest;
 

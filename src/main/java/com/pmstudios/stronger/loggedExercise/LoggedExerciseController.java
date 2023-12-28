@@ -38,7 +38,7 @@ public class LoggedExerciseController {
         }
 
         LoggedExercise createdLoggedExercise = loggedExerciseService.create(workout, exerciseId);
-        return new ResponseEntity<>(createdLoggedExercise, HttpStatus.CREATED);
+        return new ResponseEntity<>(LoggedExerciseResponse.from(createdLoggedExercise), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")

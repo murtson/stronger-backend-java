@@ -66,6 +66,7 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
 
     @Override // This method handle invalid field arguments for requests
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        System.out.println("bgggg");
         List<String> errors = new ArrayList<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> errors.add(error.getDefaultMessage()));
         ErrorResponse errorResponse = new ErrorResponse(errors);

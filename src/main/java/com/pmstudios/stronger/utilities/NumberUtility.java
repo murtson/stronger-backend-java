@@ -1,4 +1,4 @@
-package com.pmstudios.stronger;
+package com.pmstudios.stronger.utilities;
 
 public class NumberUtility {
 

@@ -22,6 +22,8 @@ public interface WorkoutService {
 
     List<Workout> getUserWorkoutsBetweenDates(LocalDateTime startDate, LocalDateTime endDate, Long userId);
 
-    Optional<Workout> getWorkoutByDateAndUserId(LocalDate date, Long userId);
+    List<Workout> getWorkoutByDateAndUserId(LocalDate date, Long userId);
+
+    Workout createWorkout(Workout workout, LocalDateTime startDateTime, Long userId);
 
 }
