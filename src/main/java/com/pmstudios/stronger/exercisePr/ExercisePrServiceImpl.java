@@ -16,14 +16,15 @@ public class ExercisePrServiceImpl implements ExercisePrService {
 
     @Override
     public void deleteByExercisePr(ExercisePr exercisePr) {
-        LoggedSet loggedSet = exercisePr.getLoggedSet();
-        loggedSet.setExercisePr(null);
         exercisePrRepository.delete(exercisePr);
     }
 
     @Override
     public void deleteById(Long exercisePrId) {
+
+        System.out.println("Deleting");
         exercisePrRepository.deleteById(exercisePrId);
+        System.out.println("Successful");
     }
 
     @Override

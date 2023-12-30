@@ -5,15 +5,5 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-
-@AllArgsConstructor
-@Getter
-@Setter
-public class AddLoggedSetRequest {
-
-    private Double weight;
-
-    private int reps;
-
-
+public record AddLoggedSetRequest(Double weight, int reps) {
 }

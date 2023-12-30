@@ -45,7 +45,6 @@ public class LoggedSet {
     @Column(name = "is_top_logged_set")
     private boolean isTopLoggedSet;
 
-
     @NotNull(message = "loggedExercise cannot be null")
     @JsonIgnore
     @ManyToOne(optional = false)
@@ -56,5 +55,6 @@ public class LoggedSet {
     @JsonIgnoreProperties(value = {"loggedSet"})
     @OneToOne(mappedBy = "loggedSet", cascade = CascadeType.ALL, orphanRemoval = true)
     private ExercisePr exercisePr;
+
 
 }

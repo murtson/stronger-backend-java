@@ -17,8 +17,8 @@ public interface LoggedSetService {
     }
 
     static LoggedSet from(AddLoggedSetRequest request) {
-        return new LoggedSet(request.getWeight(), request.getReps(),
-                getOneRepMaxEstimate(request.getWeight(), request.getReps()), false);
+        return new LoggedSet(request.weight(), request.reps(),
+                getOneRepMaxEstimate(request.weight(), request.reps()), false);
     }
 
     LoggedSet getById(Long id);

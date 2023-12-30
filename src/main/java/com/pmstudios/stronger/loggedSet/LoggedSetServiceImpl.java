@@ -48,10 +48,13 @@ public class LoggedSetServiceImpl implements LoggedSetService {
         return loggedSetRepository.findByRepsAndLoggedExercise_Exercise_IdAndLoggedExercise_Workout_User_Id(reps, exerciseId, userId);
     }
 
-    @Transactional
+    // @Transactional
+    // This cannot be Transactional because of the constraint that there can only be 1 exercisePr for a specific exercise and rep-range.
     @Override
     public List<LoggedSet> addLoggedSet(LoggedExercise loggedExercise, LoggedSet toBeAddedLoggedSet) {
-        List<LoggedSet> previousLoggedSets = loggedExercise.getLoggedSets();
+        List<LoggedSet> previousLoggedSets = loggedExercise.getLoggedSets() == null
+                ? List.of()
+                : loggedExercise.getLoggedSets();
 
         toBeAddedLoggedSet.setLoggedExercise(loggedExercise);
 
@@ -86,13 +89,24 @@ public class LoggedSetServiceImpl implements LoggedSetService {
 
         if (isNotANewExercisePr) return;
 
-        exercisePrService.deleteByExercisePr(currentExercisePr);
+        deleteExercisePr(currentExercisePr);
+
         ExercisePr newExercisePr = ExercisePr.from(toBeAddedLoggedSet);
         toBeAddedLoggedSet.setExercisePr(newExercisePr);
+    }
 
+    public void deleteExercisePr(ExercisePr exercisePr) {
+        LoggedSet loggedSet = exercisePr.getLoggedSet();
+        loggedSet.setExercisePr(null);
+        save(loggedSet);
     }
 
     public void updateTopLoggedSetWhenLoggedSetIsAdded(LoggedSet loggedSetToBeAdded, List<LoggedSet> previousLoggedSets) {
+        if (previousLoggedSets.isEmpty()) {
+            loggedSetToBeAdded.setTopLoggedSet(true);
+            return;
+        }
+
         boolean isNewTopSet = isNewTopLoggedSet(loggedSetToBeAdded, previousLoggedSets);
         if (!isNewTopSet) return;
 

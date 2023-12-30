@@ -47,9 +47,9 @@ public class ExercisePr {
     private Exercise exercise;
 
     @NonNull
-    @JsonIgnoreProperties(value = { "loggedExercise" })
+    @JsonIgnoreProperties(value = {"loggedExercise"})
     @OneToOne(optional = false)
-    @JoinColumn(name = "exercise_pr_id", referencedColumnName = "id")
+    @JoinColumn(name = "logged_set_id", referencedColumnName = "id")
     private LoggedSet loggedSet;
 
     public static ExercisePr from(LoggedSet loggedSet) {

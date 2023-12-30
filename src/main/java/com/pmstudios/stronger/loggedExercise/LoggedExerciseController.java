@@ -1,6 +1,9 @@
 package com.pmstudios.stronger.loggedExercise;
 
 import com.pmstudios.stronger.loggedExercise.dto.LoggedExerciseResponse;
+import com.pmstudios.stronger.loggedSet.LoggedSet;
+import com.pmstudios.stronger.loggedSet.LoggedSetService;
+import com.pmstudios.stronger.loggedSet.dto.AddLoggedSetRequest;
 import com.pmstudios.stronger.user.User;
 import com.pmstudios.stronger.auth.dto.UserUtils;
 import com.pmstudios.stronger.workout.Workout;
@@ -21,11 +24,13 @@ public class LoggedExerciseController {
 
     private final LoggedExerciseService loggedExerciseService;
     private final WorkoutService workoutService;
+    private final LoggedSetService loggedSetService;
 
     @PostMapping("/workout/{workoutId}/exercise/{exerciseId}")
     ResponseEntity<?> createLoggedExercise(
             @PathVariable Long workoutId,
             @PathVariable Long exerciseId,
+            @RequestBody AddLoggedSetRequest requestBody,
             @AuthenticationPrincipal User authUser
     ) {
         // TODO: fix so that loggedSetsDTO can be sent with the req
@@ -38,6 +43,9 @@ public class LoggedExerciseController {
         }
 
         LoggedExercise createdLoggedExercise = loggedExerciseService.create(workout, exerciseId);
+        List<LoggedSet> addedSets = loggedSetService.addLoggedSet(createdLoggedExercise, LoggedSetService.from(requestBody));
+        createdLoggedExercise.setLoggedSets(addedSets);
+
         return new ResponseEntity<>(LoggedExerciseResponse.from(createdLoggedExercise), HttpStatus.CREATED);
     }
 
