@@ -58,11 +58,11 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Object> handleAlLErrors(RuntimeException ex) {
-        ErrorResponse errorResponse = new ErrorResponse(Collections.singletonList(ex.getMessage()));
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-    }
+//    @ExceptionHandler(RuntimeException.class)
+//    public ResponseEntity<Object> handleAlLErrors(RuntimeException ex) {
+//        ErrorResponse errorResponse = new ErrorResponse(Collections.singletonList(ex.getMessage()));
+//        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+//    }
 
     @Override // This method handle invalid field arguments for requests
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {

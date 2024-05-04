@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Service
@@ -58,10 +59,11 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public List<Workout> getWorkoutByDateAndUserId(LocalDate date, Long userId) {
+    public Optional<Workout> getWorkoutByDateAndUserId(LocalDate date, Long userId) {
         LocalDateTime startOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
-        return workoutRepository.findAllByStartDateBetweenAndUserId(startOfDay, endOfDay, userId);
+        // Returns a list from repository, but should theoretically only be one
+        return workoutRepository.findAllByStartDateBetweenAndUserId(startOfDay, endOfDay, userId).stream().findFirst();
     }
 
     @Override
@@ -87,10 +89,9 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     private void checkDuplicateWorkouts(LocalDate startDate, Long userId) {
         // Checking to see if there already is a workout for this date
-        List<Workout> workouts = this.getWorkoutByDateAndUserId(startDate, userId);
-        if (!workouts.isEmpty()) {
-            throw new BadRequestException("You already have a workout for this date");
-        }
+        this.getWorkoutByDateAndUserId(startDate, userId).ifPresent(workout -> {
+            throw new BadRequestException("You already have a workout for this date: " + startDate);
+        });
     }
 
 }

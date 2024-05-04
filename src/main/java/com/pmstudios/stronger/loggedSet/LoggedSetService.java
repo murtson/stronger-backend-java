@@ -35,4 +35,6 @@ public interface LoggedSetService {
 
     List<LoggedSet> removeLoggedSet(LoggedSet loggedSet);
 
+    List<LoggedSet> updateLoggedSet(LoggedSet oldLoggedSet, LoggedSet newLoggedSet);
+
 }

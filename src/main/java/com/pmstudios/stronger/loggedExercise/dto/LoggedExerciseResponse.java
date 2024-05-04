@@ -18,9 +18,7 @@ public class LoggedExerciseResponse {
 
 
     private Long loggedExerciseId;
-
     private List<LoggedSetResponse> loggedSets;
-
     private Exercise exercise;
 
     public static LoggedExerciseResponse from(LoggedExercise loggedExercise) {

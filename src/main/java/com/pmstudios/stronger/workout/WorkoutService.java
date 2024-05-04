@@ -1,5 +1,6 @@
 package com.pmstudios.stronger.workout;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,7 +23,7 @@ public interface WorkoutService {
 
     List<Workout> getUserWorkoutsBetweenDates(LocalDateTime startDate, LocalDateTime endDate, Long userId);
 
-    List<Workout> getWorkoutByDateAndUserId(LocalDate date, Long userId);
+    Optional<Workout> getWorkoutByDateAndUserId(LocalDate date, Long userId);
 
     Workout createWorkout(Workout workout, LocalDateTime startDateTime, Long userId);
 

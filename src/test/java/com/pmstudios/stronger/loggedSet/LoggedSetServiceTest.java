@@ -262,7 +262,7 @@ public class LoggedSetServiceTest {
         when(exercisePrService.getByRepsAndExerciseAndUserId(toBeAddedLoggedSet.getReps(), exerciseId, userId))
                 .thenReturn(null);
 
-        loggedSetServiceImpl.updateExercisePrWhenLoggedSetIsAdded(loggedExerciseSetWillBeAddedTo, toBeAddedLoggedSet);
+        loggedSetServiceImpl.updateExercisePrWhenLoggedSetIsAdded(toBeAddedLoggedSet);
 
         // assert that toBeAddedLoggedSet has been set as new exercisePr
         Double result = toBeAddedLoggedSet.getExercisePr().getEstimatedOneRepMax();
@@ -285,7 +285,7 @@ public class LoggedSetServiceTest {
         when(exercisePrService.getByRepsAndExerciseAndUserId(toBeAddedLoggedSet.getReps(), exerciseId, userId))
                 .thenReturn(exercisePr1);
 
-        loggedSetServiceImpl.updateExercisePrWhenLoggedSetIsAdded(loggedExerciseSetWillBeAddedTo, toBeAddedLoggedSet);
+        loggedSetServiceImpl.updateExercisePrWhenLoggedSetIsAdded(toBeAddedLoggedSet);
 
         // assert that toBeAddedLoggedSet was NOT set to new PR
         assertNull(toBeAddedLoggedSet.getExercisePr());
@@ -307,7 +307,7 @@ public class LoggedSetServiceTest {
         when(exercisePrService.getByRepsAndExerciseAndUserId(toBeAddedLoggedSet.getReps(), exerciseId, userId))
                 .thenReturn(exercisePr1);
 
-        loggedSetServiceImpl.updateExercisePrWhenLoggedSetIsAdded(loggedExerciseSetWillBeAddedTo, toBeAddedLoggedSet);
+        loggedSetServiceImpl.updateExercisePrWhenLoggedSetIsAdded(toBeAddedLoggedSet);
 
         verify(exercisePrService, times(1)).deleteByExercisePr(exercisePr1);
 
@@ -336,20 +336,20 @@ public class LoggedSetServiceTest {
     public void getLoggedSetWithHighestEORMTest__withFilledList() {
         List<LoggedSet> loggedSetsMock = Arrays.asList(loggedSet1, loggedSet2, loggedSet3);
 
-        Optional<LoggedSet> result = loggedSetServiceImpl.getLoggedSetWithHighestEORM(loggedSetsMock);
-        assertTrue(result.isPresent());
+        LoggedSet result = loggedSetServiceImpl.getLoggedSetWithHighestEORM(loggedSetsMock);
+        assertNotNull(result);
 
         Double expected = loggedSet1.getEstimatedOneRepMax();
-        assertEquals(expected, result.get().getEstimatedOneRepMax());
+        assertEquals(expected, result.getEstimatedOneRepMax());
     }
 
     @Test
     public void getLoggedSetWithHighestEORMTest__withEmptyList() {
         List<LoggedSet> emptyLoggedSets = new ArrayList<>();
 
-        Optional<LoggedSet> result = loggedSetServiceImpl.getLoggedSetWithHighestEORM(emptyLoggedSets);
+        LoggedSet result = loggedSetServiceImpl.getLoggedSetWithHighestEORM(emptyLoggedSets);
 
-        assertFalse(result.isPresent());
+        assertNull(result);
     }
 
     @Test

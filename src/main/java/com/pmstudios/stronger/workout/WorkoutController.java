@@ -23,8 +23,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/workout")
@@ -47,12 +45,9 @@ public class WorkoutController {
             @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @AuthenticationPrincipal User authUser) {
 
-        List<WorkoutResponse> workouts = workoutService.getWorkoutByDateAndUserId(date, authUser.getId())
-                .stream()
-                .map(WorkoutResponse::from)
-                .toList();
-
-        return workouts.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(workouts.get(0));
+        return workoutService.getWorkoutByDateAndUserId(date, authUser.getId())
+                .map(workout -> ResponseEntity.ok(WorkoutResponse.from(workout)))
+                .orElseGet(() -> ResponseEntity.noContent().build());
     }
 
 
