@@ -92,18 +92,22 @@ public class WorkoutController {
         return ResponseEntity.status(HttpStatus.OK).body(completedWorkout);
     }
 
-    @GetMapping("/user/all")
-    ResponseEntity<List<Workout>> getUserWorkouts(
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDate,
+    @GetMapping("/start-date/{startDate}/end-date/{endDate}")
+    ResponseEntity<List<WorkoutResponse>> getWorkoutsBetweenDates(
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @AuthenticationPrincipal User authUser
     ) {
-        List<Workout> userWorkouts;
-        if (fromDate == null || toDate == null) {
-            userWorkouts = workoutService.getWorkoutsByUserId(authUser.getId());
-        } else {
-            userWorkouts = workoutService.getUserWorkoutsBetweenDates(fromDate, toDate, authUser.getId());
-        }
+
+        List<WorkoutResponse> workouts = workoutService.getUserWorkoutsBetweenDates(startDate, endDate, authUser.getId())
+                .stream().map(WorkoutResponse::from).toList();
+
+        return ResponseEntity.ok(workouts);
+    }
+
+    @GetMapping("/user/all")
+    ResponseEntity<List<Workout>> getUserWorkouts(@AuthenticationPrincipal User authUser) {
+        List<Workout> userWorkouts = workoutService.getWorkoutsByUserId(authUser.getId());
         return new ResponseEntity<>(userWorkouts, HttpStatus.OK);
     }
 

@@ -4,6 +4,7 @@ import com.pmstudios.stronger.exception.BadRequestException;
 import com.pmstudios.stronger.exception.EntityNotFoundException;
 import com.pmstudios.stronger.user.UserService;
 import lombok.AllArgsConstructor;
+import org.hibernate.jdbc.Work;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -53,17 +54,22 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public List<Workout> getUserWorkoutsBetweenDates(LocalDateTime fromDate, LocalDateTime toDate, Long userId) {
-        if (fromDate.isAfter(toDate)) throw new DataIntegrityViolationException("fromDate must be before toDate");
-        return workoutRepository.findAllByStartDateBetweenAndUserId(fromDate, toDate, userId);
+    public List<Workout> getUserWorkoutsBetweenDates(LocalDate startDate, LocalDate endDate, Long userId) {
+        if (startDate.isAfter(endDate)) throw new DataIntegrityViolationException("fromDate must be before toDate");
+
+        LocalDateTime startOfDay = startDate.atStartOfDay();
+        LocalDateTime endOfDay = endDate.atTime(LocalTime.MAX);
+        return workoutRepository.findAllByStartDateBetweenAndUserId(startOfDay, endOfDay, userId);
     }
 
     @Override
     public Optional<Workout> getWorkoutByDateAndUserId(LocalDate date, Long userId) {
         LocalDateTime startOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+
         // Returns a list from repository, but should theoretically only be one
-        return workoutRepository.findAllByStartDateBetweenAndUserId(startOfDay, endOfDay, userId).stream().findFirst();
+        return workoutRepository.findAllByStartDateBetweenAndUserId(startOfDay, endOfDay, userId)
+                .stream().findFirst();
     }
 
     @Override
@@ -72,6 +78,7 @@ public class WorkoutServiceImpl implements WorkoutService {
         checkValidWorkoutStatus(workout);
         return workoutRepository.save(workout);
     }
+
 
     private void checkValidWorkoutStatus(Workout workout) {
         // TODO: is this the right way to check for this? Or should this be done in validators or a constraint in the db?
