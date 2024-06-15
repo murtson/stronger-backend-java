@@ -8,6 +8,8 @@ public class SecurityConstants {
     public static final String REGISTER_PATH = "/auth/register";
     public static final String LOGIN_PATH = "/auth/login";
     public static final String REFRESH_TOKEN_PATH = "/auth/token/refresh";
+    public static final String LOGOUT_PATH = "/auth/logout";
+
     public static final int TOKEN_EXPIRATION_TIME = 1000 * 60 * 60 * 24; // 24 hours in milliseconds
     public static final String AUTHORIZATION = "Authorization"; // Authorization: "Bearer + RefreshToken"
     public static final String BEARER = "Bearer "; // Authorization: "Bearer + RefreshToken"

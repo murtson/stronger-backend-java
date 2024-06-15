@@ -106,15 +106,15 @@ public class WorkoutController {
     }
 
     @GetMapping("/user/all")
-    ResponseEntity<List<Workout>> getUserWorkouts(@AuthenticationPrincipal User authUser) {
-        List<Workout> userWorkouts = workoutService.getWorkoutsByUserId(authUser.getId());
-        return new ResponseEntity<>(userWorkouts, HttpStatus.OK);
+    ResponseEntity<List<WorkoutResponse>> getUserWorkouts(@AuthenticationPrincipal User authUser) {
+        List<WorkoutResponse> userWorkouts = workoutService.getWorkoutsByUserId(authUser.getId()).stream().map(WorkoutResponse::from).toList();
+        return ResponseEntity.ok(userWorkouts);
     }
 
     @GetMapping("/all")
-    ResponseEntity<List<Workout>> getWorkouts() {
-        List<Workout> workouts = workoutService.getAllWorkouts();
-        return new ResponseEntity<>(workouts, HttpStatus.OK);
+    ResponseEntity<List<WorkoutResponse>> getWorkouts() {
+        List<WorkoutResponse> workouts = workoutService.getAllWorkouts().stream().map(WorkoutResponse::from).toList();;
+        return ResponseEntity.ok(workouts);
     }
 
     private boolean isAllowedToEditData(Workout workout, User authUser) {

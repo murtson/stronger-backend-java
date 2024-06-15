@@ -71,13 +71,33 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<?> logoutUser(HttpServletRequest request, HttpServletResponse response) {
+
+        Cookie[] cookies = request.getCookies();
+        String message = "You are already signed out";
+
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("REFRESH_TOKEN")) {
+                String token = cookie.getValue();
+                String userEmail = jwtService.getUsernameFromRefreshToken(token);
+                message = "User " + userEmail + " signed out";
+                removeRefreshTokenCookie(response);
+            }
+        }
+
+        logger.info((message));
+
+        return ResponseEntity.ok("You successfully signed out");
+    }
+
     @GetMapping("/token/refresh")
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
         // need to check that the refresh token is valid, later on in DB as well
         Cookie[] cookies = request.getCookies();
 
         if (cookies == null) {
-            String message = "No cookies found in request";
+            String message = "No cookie found in refresh token request";
             logger.error(message);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
         }
@@ -118,6 +138,18 @@ public class AuthController {
                 .secure(true) // Make the cookie secure (works only with HTTPS)
                 .httpOnly(true) // Make the cookie accessible only via HTTP, not JavaScript
                 .sameSite("None") // Set SameSite to None
+                .build();
+
+        response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+    }
+
+    private void removeRefreshTokenCookie(HttpServletResponse response) {
+        ResponseCookie cookie = ResponseCookie.from("REFRESH_TOKEN", "")
+                .maxAge(0) // Set max age to 0 to delete the cookie
+                .path("/") // Ensure the path matches the path of the cookie you want to delete
+                .secure(true) // Ensure secure flag matches the original cookie settings
+                .httpOnly(true) // Ensure httpOnly flag matches the original cookie settings
+                .sameSite("None") // Ensure SameSite attribute matches the original cookie settings
                 .build();
 
         response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
