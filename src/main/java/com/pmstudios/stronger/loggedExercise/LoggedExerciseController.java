@@ -27,14 +27,11 @@ public class LoggedExerciseController {
     private final LoggedSetService loggedSetService;
 
     @PostMapping("/workout/{workoutId}/exercise/{exerciseId}")
-    ResponseEntity<?> createLoggedExercise(
-            @PathVariable Long workoutId,
-            @PathVariable Long exerciseId,
-            @RequestBody AddLoggedSetRequest requestBody,
-            @AuthenticationPrincipal User authUser
-    ) {
+    ResponseEntity<?> createLoggedExercise(@PathVariable Long workoutId,
+                                           @PathVariable Long exerciseId,
+                                           @RequestBody AddLoggedSetRequest requestBody,
+                                           @AuthenticationPrincipal User authUser) {
         // TODO: fix so that loggedSetsDTO can be sent with the req
-
         Workout workout = workoutService.getWorkoutById(workoutId);
 
         if (!isModifyingOwnData(workout, authUser) && !UserUtils.isAdminUser(authUser)) {
@@ -46,13 +43,15 @@ public class LoggedExerciseController {
         List<LoggedSet> addedSets = loggedSetService.addLoggedSet(createdLoggedExercise, LoggedSetService.from(requestBody));
         createdLoggedExercise.setLoggedSets(addedSets);
 
-        return new ResponseEntity<>(LoggedExerciseResponse.from(createdLoggedExercise), HttpStatus.CREATED);
+        LoggedExerciseResponse response = LoggedExerciseResponse.from(createdLoggedExercise);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/{id}")
     ResponseEntity<LoggedExerciseResponse> getLoggedExercise(@PathVariable Long id) {
         LoggedExercise loggedExercise = loggedExerciseService.getById(id);
-        return new ResponseEntity<>(LoggedExerciseResponse.from(loggedExercise), HttpStatus.OK);
+        LoggedExerciseResponse response = LoggedExerciseResponse.from(loggedExercise);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{loggedExerciseId}")
@@ -65,9 +64,8 @@ public class LoggedExerciseController {
         }
 
         loggedExerciseService.delete(loggedExerciseToDelete);
-
         String message = "You deleted loggedExercise with id: " + loggedExerciseId;
-        return ResponseEntity.status(HttpStatus.OK).body(message);
+        return ResponseEntity.ok(message);
     }
 
 
@@ -76,15 +74,15 @@ public class LoggedExerciseController {
         List<LoggedExercise> loggedExercises = loggedExerciseService.getByWorkoutId(workoutId);
         List<LoggedExerciseResponse> response = loggedExercises.stream()
                 .map(LoggedExerciseResponse::from).toList();
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/exercise/{exerciseId}/user/{userId}")
     ResponseEntity<List<LoggedExercise>> getLoggedExercisesByExerciseIdAndUserId(@PathVariable Long exerciseId, @PathVariable Long userId) {
         List<LoggedExercise> loggedExercises = loggedExerciseService.getByExerciseIdAndUserId(exerciseId, userId);
-        return new ResponseEntity<>(loggedExercises, HttpStatus.OK);
+        return ResponseEntity.ok(loggedExercises);
     }
+
 
     private boolean isModifyingOwnData(Workout workout, User authUser) {
         return Objects.equals(workout.getUser().getId(), authUser.getId());
