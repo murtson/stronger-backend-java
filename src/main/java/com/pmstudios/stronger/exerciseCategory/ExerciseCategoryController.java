@@ -1,5 +1,6 @@
 package com.pmstudios.stronger.exerciseCategory;
 
+import com.pmstudios.stronger.exerciseCategory.dto.ExerciseCategoryResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +16,11 @@ public class ExerciseCategoryController {
     ExerciseCategoryService exerciseCategoryService;
 
     @GetMapping("/all")
-    ResponseEntity<List<ExerciseCategory>> getExerciseCategories() {
-        List<ExerciseCategory> categories = exerciseCategoryService.getExerciseCategories();
-        return new ResponseEntity<>(categories, HttpStatus.OK);
+    ResponseEntity<List<ExerciseCategoryResponse>> getExerciseCategories() {
+        List<ExerciseCategoryResponse> categories = exerciseCategoryService.getExerciseCategories().stream()
+                .map(ExerciseCategoryResponse::from).toList();
+
+        return ResponseEntity.ok(categories);
     }
 
     @GetMapping("/{id}")
