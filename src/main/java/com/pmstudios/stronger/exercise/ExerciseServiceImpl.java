@@ -3,6 +3,7 @@ package com.pmstudios.stronger.exercise;
 import com.pmstudios.stronger.exerciseCategory.ExerciseCategory;
 import com.pmstudios.stronger.exception.EntityNotFoundException;
 import com.pmstudios.stronger.exerciseCategory.ExerciseCategoryService;
+import com.pmstudios.stronger.loggedExercise.LoggedExercise;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +17,9 @@ public class ExerciseServiceImpl implements ExerciseService {
     ExerciseCategoryService exerciseCategoryService;
 
     @Override
-    public Exercise getExercise(Long id) {
-        return exerciseRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(id, Exercise.class));
+    public Exercise getExercise(Long exerciseId) {
+        return exerciseRepository.findById(exerciseId)
+                .orElseThrow(() -> new EntityNotFoundException(exerciseId, Exercise.class));
     }
 
     @Override

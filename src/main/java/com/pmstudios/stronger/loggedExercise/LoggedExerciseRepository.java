@@ -8,7 +8,6 @@ import java.util.List;
 public interface LoggedExerciseRepository extends JpaRepository<LoggedExercise, Long> {
     List<LoggedExercise> findByWorkoutId(Long workoutId);
 
+    // TODO: perhaps later set a user_id directly on LoggedExercise so we can remove  these convoluted query names
     List<LoggedExercise> findByExerciseIdAndWorkout_User_Id(Long exerciseId, Long userId);
-
-
 }

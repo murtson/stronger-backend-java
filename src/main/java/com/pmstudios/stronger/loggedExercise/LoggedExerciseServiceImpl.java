@@ -56,5 +56,10 @@ public class LoggedExerciseServiceImpl implements LoggedExerciseService {
         return loggedExerciseRepository.findByExerciseIdAndWorkout_User_Id(exerciseId, userId);
     }
 
+    @Override
+    public List<LoggedExercise> getLoggedExerciseByExercise(Long exerciseId, Long userId) {
+       return loggedExerciseRepository.findByExerciseIdAndWorkout_User_Id(exerciseId, userId);
+    }
+
 
 }

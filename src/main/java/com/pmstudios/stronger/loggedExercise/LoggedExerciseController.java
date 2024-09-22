@@ -68,7 +68,6 @@ public class LoggedExerciseController {
         return ResponseEntity.ok(message);
     }
 
-
     @GetMapping("/workout/{workoutId}")
     ResponseEntity<List<LoggedExerciseResponse>> getLoggedExercisesByWorkoutId(@PathVariable Long workoutId) {
         List<LoggedExercise> loggedExercises = loggedExerciseService.getByWorkoutId(workoutId);
@@ -77,12 +76,13 @@ public class LoggedExerciseController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/exercise/{exerciseId}/user/{userId}")
-    ResponseEntity<List<LoggedExercise>> getLoggedExercisesByExerciseIdAndUserId(@PathVariable Long exerciseId, @PathVariable Long userId) {
-        List<LoggedExercise> loggedExercises = loggedExerciseService.getByExerciseIdAndUserId(exerciseId, userId);
-        return ResponseEntity.ok(loggedExercises);
+    @GetMapping("exercise/{exerciseId}")
+    public ResponseEntity<List<LoggedExerciseResponse>> getLoggedExercisesByExercise(@PathVariable Long exerciseId,
+                                                                                     @AuthenticationPrincipal User authUser) {
+        List<LoggedExerciseResponse> responses = loggedExerciseService.getLoggedExerciseByExercise(exerciseId, authUser.getId())
+                .stream().map(LoggedExerciseResponse::from).toList();
+        return ResponseEntity.ok(responses);
     }
-
 
     private boolean isModifyingOwnData(Workout workout, User authUser) {
         return Objects.equals(workout.getUser().getId(), authUser.getId());
@@ -91,6 +91,5 @@ public class LoggedExerciseController {
     private boolean isModifyingOwnData(LoggedExercise loggedExercise, User authUser) {
         return Objects.equals(loggedExercise.getWorkout().getUser().getId(), authUser.getId());
     }
-
 
 }

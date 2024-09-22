@@ -20,4 +20,6 @@ public interface LoggedExerciseService {
 
     List<LoggedExercise> getByExerciseIdAndUserId(Long exerciseId, Long userId);
 
+    List<LoggedExercise> getLoggedExerciseByExercise(Long exerciseId, Long userId);
+
 }

@@ -22,6 +22,7 @@ public class LoggedExercise {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @NonNull
     @NotNull(message = "workout cannot be null")
     @JsonIgnoreProperties(value = {"loggedExercises", "user"})

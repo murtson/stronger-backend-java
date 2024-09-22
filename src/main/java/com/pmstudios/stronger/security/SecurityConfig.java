@@ -43,8 +43,11 @@ public class SecurityConfig {
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
-                .antMatchers(SecurityConstants.REGISTER_PATH, SecurityConstants.LOGIN_PATH,
-                        SecurityConstants.REFRESH_TOKEN_PATH, SecurityConstants.LOGOUT_PATH).permitAll() // white list auth paths
+                .antMatchers(
+                        SecurityConstants.REGISTER_PATH,
+                        SecurityConstants.LOGIN_PATH,
+                        SecurityConstants.REFRESH_TOKEN_PATH,
+                        SecurityConstants.LOGOUT_PATH).permitAll() // white list auth paths
                 .anyRequest().authenticated(); // all requests should be authenticated, is this the authentication manager?
 
         http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // could add custom AuthenticationFilter
